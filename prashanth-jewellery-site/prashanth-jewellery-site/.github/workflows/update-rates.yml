@@ -1,0 +1,23 @@
+name: Update Kerala rates
+on:
+  schedule:
+    - cron: "30 4 * * *"   # 10:00 AM IST
+    - cron: "30 5 * * *"   # 11:00 AM IST, picks up late revisions
+    - cron: "30 7 * * *"   # 1:00 PM IST
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python scripts/update_rates.py
+      - name: Commit changes
+        run: |
+          git config user.name "pj-rates-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/rates.json
+          git diff --staged --quiet || (git commit -m "Update rates $(date -u +%F)" && git push)
