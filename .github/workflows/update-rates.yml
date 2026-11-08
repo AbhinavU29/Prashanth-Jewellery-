@@ -1,9 +1,7 @@
 name: Update Kerala rates
 on:
   schedule:
-    - cron: "30 4 * * *"   # 10:00 AM IST
-    - cron: "30 5 * * *"   # 11:00 AM IST, picks up late revisions
-    - cron: "30 7 * * *"   # 1:00 PM IST
+    - cron: "15,45 3-9 * * *"   # every 30 min, about 8:45 AM to 3:15 PM IST
   workflow_dispatch:
 permissions:
   contents: write
@@ -19,5 +17,6 @@ jobs:
         run: |
           git config user.name "pj-rates-bot"
           git config user.email "actions@users.noreply.github.com"
+          git pull --rebase -q || true
           git add data/rates.json
           git diff --staged --quiet || (git commit -m "Update rates $(date -u +%F)" && git push)
