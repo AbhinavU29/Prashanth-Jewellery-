@@ -82,3 +82,15 @@ if json.dumps([data["g22"], data["silver"]]) != before:
     print("updated:", data["g22"][-1], data["silver"][-1])
 else:
     print("no change:", data["g22"][-1], data["silver"][-1])
+
+# ---- national benchmark (IBJA 999 gold, AM/PM, Rs/10 g) -> data/market.json (used for the forecast drivers) ----
+def collect_ibja():
+    rows = {}
+    for d, m, y, am, pm in re.findall(r"(\d{2})/(\d{2})/(\d{4})\s+Gold\s+999\s+(\d{5,6})\s+(\d{5,6})\s+10 Gms", text("https://bullionworld.in/ibja-gold-price.php")):
+        rows[f"{y}-{m}-{d}"] = [int(am), int(pm)]
+    return rows
+try:
+    mpath = "data/market.json"; market = json.load(open(mpath)); got = collect_ibja(); old = json.dumps(market.get("ibja"), sort_keys=True)
+    market.setdefault("ibja", {}).update(got)
+    if json.dumps(market["ibja"], sort_keys=True) != old: json.dump(market, open(mpath, "w"), indent=0, ensure_ascii=False); print("IBJA rows:", len(got))
+except Exception as e: print("IBJA benchmark unavailable:", e, file=sys.stderr)
