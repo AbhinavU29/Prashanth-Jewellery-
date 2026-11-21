@@ -1,13 +1,22 @@
 name: Update Kerala rates
 on:
   schedule:
-    - cron: "15,45 3-9 * * *"   # every 30 min, about 8:45 AM to 3:15 PM IST
+    - cron: "30-55/5 3 * * *"   # 9:00-9:25 AM IST, every 5 min
+    - cron: "*/5 4 * * *"       # 9:30-10:25 AM IST, every 5 min
+    - cron: "0-30/5 5 * * *"    # 10:30-11:00 AM IST, every 5 min
+    - cron: "0,30 0-2 * * *"    # 5:30-8:30 AM IST, every 30 min
+    - cron: "0 3 * * *"         # 8:30 AM IST
+    - cron: "0,30 6-23 * * *"   # 11:30 AM-5:00 AM IST, every 30 min
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: update-rates
+  cancel-in-progress: false
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17,6 +26,5 @@ jobs:
         run: |
           git config user.name "pj-rates-bot"
           git config user.email "actions@users.noreply.github.com"
-          git pull --rebase -q || true
           git add data/rates.json
-          git diff --staged --quiet || (git commit -m "Update rates $(date -u +%F)" && git push)
+          git diff --staged --quiet || (git pull --rebase -q; git commit -m "Update rates $(date -u +%FT%H:%MZ)" && git push)
