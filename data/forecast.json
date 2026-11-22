@@ -15,14 +15,18 @@
 "share": 0.04
 },
 "signal": {
-"used": false
+"used": true,
+"move_pct": 0.0,
+"source": "COMEX gold x USD/INR"
 },
-"basis": "history only",
+"basis": "live market signal",
 "model": {
 "name": "Ridge regression on market factors",
-"status": "collecting",
-"oos_days": 0,
-"n_samples": 0
+"status": "inactive",
+"oos_days": 140,
+"n_samples": 200,
+"gain_pct": -1.6,
+"dir_acc": 0.62
 },
 "backtest": {
 "days": 90,
@@ -31,5 +35,5 @@
 "flat_width": 454,
 "typical_move": 106
 },
-"generated": "2026-11-22T14:34:25+05:30"
+"generated": "2026-11-22T14:59:10+05:30"
 }
