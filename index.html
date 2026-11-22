@@ -157,7 +157,7 @@ tr.pred{background:rgba(10,132,255,.07)}tr.pred td{font-style:italic}.badge.p{ba
 @media(max-width:640px){nav{top:6px;border-radius:18px}.lgd{position:static;margin-bottom:6px}}
 
 /* ---- footer, social links, cursor interactions ---- */
-footer.ft2{max-width:none;margin:48px 0 0;padding:28px clamp(20px,3vw,36px) 20px;text-align:left;color:var(--ink);font-size:14px}
+footer.ft2{max-width:none;margin:48px 0 56px;padding:28px clamp(20px,3vw,36px) 24px;text-align:left;color:var(--ink);font-size:14px}
 .ft2top{display:flex;align-items:center;justify-content:space-between;gap:24px 32px;flex-wrap:wrap}
 .ft2brand{display:flex;align-items:center;gap:12px}.ft2brand b{display:block;font-size:16px;letter-spacing:-.01em}.ft2brand small{color:var(--mut);font-size:12.5px}.ft-lg{width:52px;height:52px}
 .ft2links{display:flex;gap:6px 22px;flex-wrap:wrap}.ft2links a{position:relative;color:var(--mut);font-size:13.5px;padding:4px 0;transition:color .25s}.ft2links a:hover{color:var(--ink)}
@@ -176,7 +176,8 @@ footer.ft2{max-width:none;margin:48px 0 0;padding:28px clamp(20px,3vw,36px) 20px
 .btn,.ibtn{translate:var(--tx,0) var(--ty,0);transition:transform .2s,box-shadow .2s,translate .2s ease-out}
 .panel,.stat{position:relative}.panel::after,.stat::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%),rgba(10,132,255,.10),transparent 45%);opacity:0;transition:opacity .35s}.panel:hover::after,.stat:hover::after{opacity:1}
 .cglow{position:fixed;left:0;top:0;width:520px;height:520px;border-radius:50%;pointer-events:none;z-index:-1;background:radial-gradient(circle,rgba(10,132,255,.14),transparent 65%);will-change:transform}
-@media(max-width:640px){.ft2top{flex-direction:column;align-items:flex-start}.ft2bot{flex-direction:column}}
+@media(max-width:640px){footer.ft2{margin-bottom:44px}.ft2top{flex-direction:column;align-items:flex-start}.ft2bot{flex-direction:column}}
+body{padding-bottom:env(safe-area-inset-bottom,0px)}
 
 /* ---- hero layout: floating cards sit beside, not over, the main card ---- */
 .vis{min-height:500px}.phone{width:min(272px,86%)}.float{width:158px}.f3{bottom:18px}.f4{bottom:34px}
@@ -335,10 +336,12 @@ function renderChart(){
   var pts=s.map(function(x){return [X(x.d),Y(x.v)]}),path=curve(pts),h="";
   h+='<defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#0066CC"/><stop offset=".55" stop-color="#0A84FF"/><stop offset="1" stop-color="#5E5CE6"/></linearGradient><linearGradient id="af" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0A84FF" stop-opacity=".28"/><stop offset="1" stop-color="#5E5CE6" stop-opacity="0"/></linearGradient></defs>';
   for(var i=0;i<=4;i++){var v=lo+(hi-lo)*i/4,y=Y(v);h+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'" style="stroke:var(--line)"/><text x="'+(L-10)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="#8a828a">'+inr(v)+'</text>'}
-  s.forEach(function(x,i){if(i%Math.ceil(s.length/7)===0||i===s.length-1)h+='<text x="'+pts[i][0]+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="#8a828a">'+dFmt(x.d)+'</text>'});
+  var step=Math.ceil(s.length/7),tk=[];s.forEach(function(x,i){if(i%step===0||i===s.length-1)tk.push(i)});if(tk.length>1&&pts[tk[tk.length-1]][0]-pts[tk[tk.length-2]][0]<64)tk.splice(tk.length-2,1);
+  tk.forEach(function(i){h+='<text x="'+pts[i][0]+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="#8a828a">'+dFmt(s[i].d)+'</text>'});
   h+='<path d="'+path+' L'+pts[pts.length-1][0]+','+(H-B)+' L'+pts[0][0]+','+(H-B)+' Z" fill="url(#af)" class="ca"/><path d="'+path+'" pathLength="1" class="cl" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linecap="round" style="filter:drop-shadow(0 4px 8px rgba(123,63,228,.35))"/>';
+  var nl=function(x,y){var l=pts[pts.length-1];return Math.abs(x-l[0])<140&&Math.abs(y-l[1])<45};
   [[st.hi,"#FF3B30","High",-12],[st.lo,"#34C759","Low",20]].forEach(function(m){var x=X(m[0].d),y=Y(m[0].v);
-    h+='<circle cx="'+x+'" cy="'+y+'" r="6" fill="'+m[1]+'" stroke="#fff" stroke-width="2.5"/><text x="'+Math.min(Math.max(x,70),W-70)+'" y="'+(y+m[3])+'" text-anchor="middle" font-size="12" font-weight="600" fill="'+m[1]+'">'+m[2]+" "+inr(m[0].v)+'</text>'});
+    h+='<circle cx="'+x+'" cy="'+y+'" r="6" fill="'+m[1]+'" stroke="#fff" stroke-width="2.5"/><text x="'+Math.min(Math.max(x,70),W-70)+'" y="'+(y+m[3])+'" text-anchor="middle" font-size="12" font-weight="600" fill="'+m[1]+'">'+(nl(x,y)?"":m[2]+" "+inr(m[0].v))+'</text>'});
   var lp=pts[pts.length-1],ls=s[s.length-1],msx=months(),curM=monKey()===msx[msx.length-1],lab=(!curM?"Month-end":ls.d===today()?"Today":"Latest")+" "+inr(ls.v),bw=lab.length*7.3+24,low=ls.d===st.lo.d,lx=pf?lp[0]-bw+14:W-6-bw,by=low?lp[1]-38:lp[1]+14;
   h+='<circle cx="'+lp[0]+'" cy="'+lp[1]+'" r="8" fill="#D4AF37" opacity=".35"><animate attributeName="r" values="7;17;7" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".45;0;.45" dur="2s" repeatCount="indefinite"/></circle><circle cx="'+lp[0]+'" cy="'+lp[1]+'" r="6.5" fill="#D4AF37" stroke="#fff" stroke-width="2.5"/>';
   h+='<rect x="'+lx+'" y="'+by+'" width="'+bw+'" height="24" rx="12" fill="#D4AF37"/><text x="'+(lx+bw/2)+'" y="'+(by+16)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#2b2100">'+lab+'</text>';
