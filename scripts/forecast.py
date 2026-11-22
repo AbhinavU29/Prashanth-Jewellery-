@@ -59,7 +59,7 @@ def backtest(dates, vals, rets, window=90):
 
 def yahoo(sym):
     req = urllib.request.Request(f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}?range=5d&interval=15m", headers={"User-Agent": "Mozilla/5.0 (compatible; PJRatesBot/1.0)"})
-    r = json.loads(urllib.request.urlopen(req, timeout=30).read())["chart"]["result"][0]
+    r = json.loads(urllib.request.urlopen(req, timeout=12).read())["chart"]["result"][0]
     return [(t, c) for t, c in zip(r["timestamp"], r["indicators"]["quote"][0]["close"]) if c]
 
 def intl_signal(last_date):
@@ -79,14 +79,15 @@ def intl_signal(last_date):
 SYMS = {"gold": "GC%3DF", "usdinr": "INR%3DX", "dxy": "DX-Y.NYB", "us10y": "%5ETNX", "oil": "CL%3DF"}
 def yahoo_daily(sym):
     req = urllib.request.Request(f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}?range=1y&interval=1d", headers={"User-Agent": "Mozilla/5.0 (compatible; PJRatesBot/1.0)"})
-    r = json.loads(urllib.request.urlopen(req, timeout=30).read())["chart"]["result"][0]; off = r["meta"].get("gmtoffset", 0)
+    r = json.loads(urllib.request.urlopen(req, timeout=12).read())["chart"]["result"][0]; off = r["meta"].get("gmtoffset", 0)
     return {datetime.utcfromtimestamp(t + off).date().isoformat(): c for t, c in zip(r["timestamp"], r["indicators"]["quote"][0]["close"]) if c}
 def update_market_history():
     h = load("market_history.json", {})
+    if datetime.now().timestamp() - h.get("_t", 0) < 6 * 3600: return h      # refresh at most every 6 hours
     for k, sym in SYMS.items():
         try: h.setdefault(k, {}).update(yahoo_daily(sym))
-        except Exception as e: print("market history failed:", k, e, file=sys.stderr)
-    save("market_history.json", h); return h
+        except Exception as e: print("market history failed:", k, e, file=sys.stderr); return h   # stop at the first failure
+    h["_t"] = datetime.now().timestamp(); save("market_history.json", h); return h
 
 def solve(A, b):
     n = len(b); M = [row[:] + [b[i]] for i, row in enumerate(A)]

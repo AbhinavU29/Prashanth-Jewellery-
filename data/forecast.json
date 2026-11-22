@@ -1,18 +1,18 @@
 {
-"for_date": "2026-11-22",
-"weekday": "Sunday",
-"last_date": "2026-11-21",
+"for_date": "2026-11-23",
+"weekday": "Monday",
+"last_date": "2026-11-22",
 "last_rate": 11465,
-"lo": 11235,
+"lo": 11210,
 "mid": 11465,
-"hi": 11700,
+"hi": 11730,
 "level": 80,
 "tag": "Neutral",
-"sigma_pct": 1.36,
+"sigma_pct": 1.52,
 "z": 1.5,
 "unchanged_share": {
 "n": 26,
-"share": 0.23
+"share": 0.04
 },
 "signal": {
 "used": false
@@ -26,10 +26,10 @@
 },
 "backtest": {
 "days": 90,
-"coverage": 0.789,
-"avg_width": 396,
-"flat_width": 457,
-"typical_move": 109
+"coverage": 0.8,
+"avg_width": 395,
+"flat_width": 454,
+"typical_move": 106
 },
-"generated": "2026-11-21T19:59:34+05:30"
+"generated": "2026-11-22T14:34:25+05:30"
 }

@@ -33,12 +33,12 @@ Legend: ✅ completed · 🟡 partly done / needs verification · 🔲 planned �
 ### 2.2 History: six months, chart and table (✅)
 - Month tabs for the last 6 months (currently Jun–Nov 2026) × asset tabs (22K / 24K / Silver) × view toggle (Chart / Table). Data stored for May 2026 onward.
 - Table: every calendar day of the month, **earliest date first**; days without a verified rate show "No verified rate"; highest and lowest rows highlighted and badged; today's row badged "Today" (or "Latest" if stale).
-- Chart: smooth line + area, hover/touch tooltip, high/low markers, pulsing "Today ₹…" marker, line-draw animation.
+- Chart: smooth line + area, hover/touch tooltip, high/low markers, line-draw animation, and a pulsing **gold** "Today ₹…" marker (the only gold accent in the UI besides the logo). **Actual rates only: predictions are no longer drawn on the chart (owner request, 22 Nov 2026).** The table still shows a dashed "Predicted" row and the forecast card shows the range.
 - Summary cards: Lowest (with date), Highest (with date), **Today's price range** (today's rate positioned on a low→high bar; "Month-end price range" for past months).
 - Mobile: table rows become cards (date + rate + change + per-pavan/kg), no sideways scrolling.
 
 ### 2.3 Prediction (✅ rebuilt, see §5)
-Projected range for the next board rate, 80% confidence range (never a single "guaranteed" price), centre, tag (Neutral / Leaning up / Leaning down), basis chip, "unchanged on x% of Sundays", driver list, accuracy panel (back-test + live record), explicit disclaimer. Predictions are **visually separate from actual rates**: dashed line + translucent band + "Predicted" label on the chart, dashed "Predicted" row in the table, dashed "Predicted" chip.
+Projected range for the next board rate, 80% confidence range (never a single "guaranteed" price), centre, tag (Neutral / Leaning up / Leaning down), basis chip, "unchanged on x% of Sundays", range bar, explicit disclaimer. **Removed from the UI on 21 Nov 2026 (owner request):** the market-driver list and the accuracy / prediction-history panel (back-test and live record). The back-test and `forecast_log.json` still run in the pipeline for maintenance. Predictions are **visually separate from actual rates**: dashed line + translucent band + "Predicted" label on the chart, dashed "Predicted" row in the table, dashed "Predicted" chip.
 
 ### 2.4 Price calculator (✅)
 22K / 24K / silver; weight in grams, pavan (gold) or kg (silver); making charge % (blank by default); GST % (3% default, editable). Shows rate, weight, metal value, making charge, GST, total. Large touch targets; 16 px inputs (no iOS zoom). Estimate only.
@@ -50,14 +50,17 @@ Header badge "Kerala Market Live / Awaiting today's rate" by comparing latest ra
 - Prashanth Jewellery, Thalassery, Kannur, Kerala. Services: gold and silver jewellery for ladies, gents, kids; polishing and repair.
 - Google Maps card + "Open in Google Maps" / "Get directions" (coordinates 11.7478537, 75.492669). Embedded map removed (blank in sandboxed preview).
 - Owner's logo (gold ring "PJ JEWELLERS") used in nav, intro, shop panel, footer, favicon (embedded WebP). Original in `assets/logo.png`.
-- Instagram and YouTube round icons in footer.
+- Instagram, YouTube and X (`x.com/abhinav_u_`) icons in the footer. Hover: scale, brand-colour fill (Instagram gradient, YouTube red, X black/white), glow, expanding ring, tooltip label, and a magnetic pull toward the cursor.
+- The "sources / references" strip (AKGSMA, Asianet, Goodreturns…) and the "Source" row of the status card were **removed** (owner request). Sources are documented in §4 of this PRD only.
 - ⛔ Street address, phone and opening hours are **not verified**; fill the `SHOP` object in `index.html` to show them.
 
 ### 2.7 Experience layer (✅)
-Intro splash (logo reveal with shine, then today's 22K/24K/silver rates with trend colour, sparkline, "Updated …" stamp; tap to skip; ~4.5 s), dark/light mode (follows device, remembered), count-up prices, chart draw animation, skeleton/blur loading states on refresh and tab changes, View-Transition cross-fade on tab switches (fallback: blur loading), scroll reveals, floating price cards, pointer tilt on the hero card, hover lifts. Continuous motion is switched off for "reduce motion" users; one-time reveals stay.
+Intro splash (logo reveal with shine, then today's 22K/24K/silver rates with trend colour, sparkline, "Updated …" stamp; tap to skip; ~4.5 s), dark/light mode (follows device, remembered), count-up prices, chart draw animation, skeleton/blur loading states on refresh and tab changes, View-Transition cross-fade on tab switches (fallback: blur loading), scroll reveals, floating price cards, pointer tilt on the hero card, a soft cursor-following glow, cursor spotlight on cards, magnetic buttons and social icons, animated nav/footer link underlines, hover lifts (fine pointers only). Continuous motion is switched off for "reduce motion" users; one-time reveals stay.
+
+**Page state (✅, 22 Nov 2026):** there is no login (public read-only site). On reload or when returning to the tab, the page restores the selected month, asset, Chart/Table view, calculator inputs and scroll position from `sessionStorage`; state expires after 12 h and invalid/tampered state is discarded; the intro plays once per tab session; data is re-fetched at most once a minute on tab focus.
 
 ## 3. Design system (✅ rebuilt 21 Nov 2026)
-Apple-inspired: SF Pro (system) → Inter fallback; large, tightly tracked headings; graphite neutrals (`#F5F5F7` / `#1D1D1F`, dark `#000` / `#1C1C1E`); one accent (blue `#0A84FF` → indigo `#5E5CE6`); semantic red `#FF3B30` and green `#34C759`; frosted-glass cards (blur + saturate), hairline borders, soft layered shadows, segmented controls, pill buttons. No gold UI colours (the gold logo is the only gold). Breakpoints: ≤640 px phone (card tables, stacked), 641–1024 px tablet, >1024 px desktop. Theme history: peach/purple-orange (v1) → gold (v2, rejected by owner) → Apple graphite/blue (v3, current).
+Apple-inspired: SF Pro (system) → Inter fallback; large, tightly tracked headings; graphite neutrals (`#F5F5F7` / `#1D1D1F`, dark `#000` / `#1C1C1E`); one accent (blue `#0A84FF` → indigo `#5E5CE6`); semantic red `#FF3B30` and green `#34C759`; frosted-glass cards (blur + saturate), hairline borders, soft layered shadows, segmented controls, pill buttons. No gold UI colours (the gold logo is the only gold). Footer: Apple-style frosted glass panel with brand, quick links, social icons and credit line. Jewellery icons (ring, necklace, bangle) use the blue→indigo accent gradient, no black/graphite. Breakpoints: ≤640 px phone (card tables, stacked), 641–1024 px tablet, >1024 px desktop. Theme history: peach/purple-orange (v1) → gold (v2, rejected by owner) → Apple graphite/blue (v3, current).
 
 ## 4. Data
 ### 4.1 Series and sources
@@ -88,22 +91,25 @@ For Sun 22 Nov: ₹11,235 – ₹11,700, centre ₹11,465, Neutral, basis "Keral
 ✅ Range model, calibration, weekday effect, back-test, log, UI. ✅ Ridge pipeline tested on synthetic data (stays off for noise, switches on when gold truly drives the rate). 🟡 Live Yahoo / IBJA feeds **not yet run against the real sites** (sandbox had no internet). 🔲 Review model after ~30 live forecasts; add MCX gold, Kerala premium model, gradient boosting if justified.
 
 ## 6. Update pipeline and schedule
-`.github/workflows/update-rates.yml` → `scripts/update_rates.py` (gold: livegoldkerala → keralagoldrates → Goodreturns; silver: Goodreturns → Groww; IBJA table; backfills missing days; sanity rule ±15% from previous; writes only on change) → `scripts/forecast.py` (continue-on-error) → commit `data/*.json`.
-**Schedule (IST):** every 5 min 9:00–11:00; every 30 min the rest of the day (UTC crons in the workflow). The page re-reads `data/rates.json` and `forecast.json` on the same pattern (5 min 9–11, else 30 min) and when the tab becomes visible. GitHub may delay scheduled runs; private repos have a free-minutes quota (~70 runs/day).
+`.github/workflows/update-rates.yml` → `scripts/update_rates.py` (gold: livegoldkerala + keralagoldrates + Goodreturns, **median of the sources for the newest two days**; silver: Goodreturns + Groww; IBJA table; backfills missing days; bounds and ±15% jump guard; https-only host allow-list; writes only on change; exit 1 if nothing readable) → `scripts/forecast.py` (continue-on-error) → commit `data/*.json`.
+**Schedule (IST), redesigned 22 Nov 2026:** GitHub's own 5-minute cron proved unreliable (runs skipped/delayed, so the site showed yesterday's rates). A cron at 8:50 AM now starts one run (`scripts/run_cycle.py`) that waits for 9:00 and **polls every 5 minutes inside the run until 11:05**; a second cron runs every 30 minutes (:07/:37) all day; pushing scripts or the workflow also triggers a run; `workflow_dispatch` for manual runs. Each run writes a per-source result table to the Actions Summary. The page re-reads `data/rates.json` and `forecast.json` on the same pattern (5 min 9–11, else 30 min) and when the tab becomes visible. GitHub may delay scheduled runs; private repos have a free-minutes quota (~70 runs/day).
 
 ## 7. Technical details
 Single-file static site (`index.html`, vanilla JS, inline SVG charts, no frameworks), logo embedded as WebP in CSS variables. Hosting: GitHub Pages. Python 3 standard library only. Repo layout: `index.html`, `PRD.md`, `README.md`, `assets/logo.png`, `data/*.json`, `scripts/update_rates.py`, `scripts/forecast.py`, `.github/workflows/update-rates.yml`. No browser storage except theme preference (guarded). Accessibility: ARIA tablists, labelled icons, focus rings, reduced-motion handling. Typography uses curly apostrophes.
+
+## 7b. Security (✅ 22 Nov 2026; details in `SECURITY.md`)
+Static public site, so no authentication layer exists by design. Implemented: CSP + referrer policy, frame-busting on github.io, `noopener noreferrer` links, calculator input clamps, strict validation of `rates.json` / `forecast.json` before use, expiring page-state storage, hardened scraper (allow-list, size cap, bounds), least-privilege workflow token, no secrets in repo, `_headers` for Netlify/Cloudflare. Pending: externalise inline JS/CSS to drop `'unsafe-inline'`; host behind Cloudflare for real HTTP headers; pin Actions to SHAs; owner enables 2FA, branch protection, secret scanning.
 
 ## 8. Quality and testing done
 Syntax checks (`node --check`, `ast.parse`), DOM-stub tests of rendering (tables 21–31 rows, today badge, colour inversion, range card, intro card, forecast panel, chart overlay), parser tests with captured page text, synthetic ridge tests. **Not done:** visual QA on real devices, live-site scraper runs, cross-browser testing (Safari/Firefox), Lighthouse/accessibility audit.
 
 ## 9. Delivery log (what has been built, in order)
-1. Dashboard concept → real Kerala rates replaced all mock data. 2. Peach/purple "AI SaaS" theme from owner's reference; hosted preview. 3. Month tabs, chart/table toggle with highest/lowest, six months of data, ascending table, mobile cards. 4. Calculator, dark/light mode, shop section, Google Maps card, footer credit and social icons. 5. Auto-update pipeline (GitHub Actions), multi-source scraper, backfill, 5-min morning cadence. 6. Colour rules (high red / low green, trend-based on unchanged days), today's row and today's range card, Today marker on chart. 7. Intro animation (ring → owner's logo), today's rates on loading screen. 8. Gold theme (rejected) → Apple-inspired redesign, animation system, count-up, skeletons. 9. Prediction rebuilt with evidence-based method, back-test and live accountability. 10. This PRD.
+1. Dashboard concept → real Kerala rates replaced all mock data. 2. Peach/purple "AI SaaS" theme from owner's reference; hosted preview. 3. Month tabs, chart/table toggle with highest/lowest, six months of data, ascending table, mobile cards. 4. Calculator, dark/light mode, shop section, Google Maps card, footer credit and social icons. 5. Auto-update pipeline (GitHub Actions), multi-source scraper, backfill, 5-min morning cadence. 6. Colour rules (high red / low green, trend-based on unchanged days), today's row and today's range card, Today marker on chart. 7. Intro animation (ring → owner's logo), today's rates on loading screen. 8. Gold theme (rejected) → Apple-inspired redesign, animation system, count-up, skeletons. 9. Prediction rebuilt with evidence-based method, back-test and live accountability. 10. This PRD. 12. Reliability, security and fixes (22 Nov 2026): morning 5-minute polling loop, multi-source median updater with diagnostics, session-state restore, input/data validation, security notes and headers, removal of chart prediction overlay, gold latest-rate marker, hero card overlap fix, zip now flat (no wrapper folder) with SETUP.md. 11. Clean-up and polish (21 Nov 2026): removed prediction history/driver panel and references strip, redesigned footer, added X link, social hover animations, cursor effects, recoloured jewellery icons.
 
 ## 10. Backlog
 | Item | Status |
 |---|---|
-| Upload repo, enable Pages, set Actions write permission, run workflow once | ⛔ owner |
+| Upload repo (files at repo root incl. `.github`), enable Pages, set Actions write permission, run workflow once, read the run Summary (see `SETUP.md`) | ⛔ owner; **the live site only updates after this** |
 | Verify Yahoo / IBJA / Goodreturns parsers on first live run; fix selectors if a site blocks GitHub IPs | ⛔ first run |
 | Add shop phone, hours, street address | ⛔ owner |
 | Silver history before 14 Oct | ⛔ needs trusted source |
@@ -111,6 +117,8 @@ Syntax checks (`node --check`, `ast.parse`), DOM-stub tests of rendering (tables
 | Notifications (WhatsApp/Telegram) on large moves; shareable rate image | 🔲 |
 | Malayalam language toggle | 🔲 |
 | Real-device QA, Lighthouse ≥ 90, Safari/Firefox checks | 🔲 |
+| Serve JS/CSS as separate files and tighten CSP; Cloudflare in front for HTTP headers | 🔲 |
+| Optional external 5-minute trigger (cron-job.org → GitHub `workflow_dispatch`, needs a fine-grained token stored only in that service) if GitHub still delays runs | 🔲 |
 | Custom domain; analytics | 🔲 |
 
 ## 11. Risks and assumptions

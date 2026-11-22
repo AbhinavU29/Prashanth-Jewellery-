@@ -10,3 +10,6 @@ Schedule (UTC cron in `.github/workflows/update-rates.yml`): every 5 minutes fro
 
 
 Full product documentation: see PRD.md. Prediction method and back-test: PRD §5.
+
+
+See `SETUP.md` (setup + troubleshooting), `SECURITY.md`, and `PRD.md`.

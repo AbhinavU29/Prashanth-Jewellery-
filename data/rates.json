@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-21T10:43:00+05:30",
+"updated": "2026-11-22T14:32:00+05:30",
 "source": "Kerala board rate (AKGSMA) via livegoldkerala.com, keralagoldrates.com and Goodreturns",
 "g22": [
 [
@@ -821,6 +821,10 @@
 [
 "2026-11-21",
 11465
+],
+[
+"2026-11-22",
+11465
 ]
 ],
 "silver": [
@@ -978,6 +982,10 @@
 ],
 [
 "2026-11-21",
+175
+],
+[
+"2026-11-22",
 175
 ]
 ]
