@@ -3,9 +3,9 @@
 "weekday": "Monday",
 "last_date": "2026-11-22",
 "last_rate": 11465,
-"lo": 11470,
+"lo": 11475,
 "mid": 11735,
-"hi": 12000,
+"hi": 12005,
 "level": 80,
 "tag": "Leaning up",
 "sigma_pct": 1.52,
@@ -35,5 +35,5 @@
 "flat_width": 454,
 "typical_move": 106
 },
-"generated": "2026-11-23T09:15:46+05:30"
+"generated": "2026-11-23T09:20:53+05:30"
 }
