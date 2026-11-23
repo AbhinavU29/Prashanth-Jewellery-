@@ -3,7 +3,7 @@
 "weekday": "Tuesday",
 "last_date": "2026-11-23",
 "last_rate": 11600,
-"lo": 11415,
+"lo": 11420,
 "mid": 11600,
 "hi": 11785,
 "level": 80,
@@ -16,7 +16,7 @@
 },
 "signal": {
 "used": true,
-"move_pct": -0.0,
+"move_pct": 0.0,
 "source": "COMEX gold x USD/INR"
 },
 "basis": "live market signal",
@@ -35,5 +35,5 @@
 "flat_width": 453,
 "typical_move": 107
 },
-"generated": "2026-11-23T10:32:30+05:30"
+"generated": "2026-11-23T10:37:37+05:30"
 }
