@@ -5,7 +5,7 @@
 "last_rate": 11420,
 "lo": 11130,
 "mid": 11410,
-"hi": 11700,
+"hi": 11695,
 "level": 80,
 "tag": "Neutral",
 "sigma_pct": 1.66,
@@ -35,5 +35,5 @@
 "flat_width": 453,
 "typical_move": 108
 },
-"generated": "2026-11-25T10:57:54+05:30"
+"generated": "2026-11-25T11:03:00+05:30"
 }
