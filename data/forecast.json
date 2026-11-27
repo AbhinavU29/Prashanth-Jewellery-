@@ -3,11 +3,11 @@
 "weekday": "Saturday",
 "last_date": "2026-11-27",
 "last_rate": 11770,
-"lo": 11520,
-"mid": 11780,
-"hi": 12040,
+"lo": 11690,
+"mid": 11950,
+"hi": 12215,
 "level": 80,
-"tag": "Neutral",
+"tag": "Leaning up",
 "sigma_pct": 1.48,
 "z": 1.49,
 "unchanged_share": {
@@ -16,7 +16,7 @@
 },
 "signal": {
 "used": true,
-"move_pct": 0.1,
+"move_pct": 1.7,
 "source": "COMEX gold x USD/INR"
 },
 "basis": "live market signal",
@@ -35,5 +35,5 @@
 "flat_width": 458,
 "typical_move": 112
 },
-"generated": "2026-11-27T19:56:29+05:30"
+"generated": "2026-11-28T01:45:09+05:30"
 }
