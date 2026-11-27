@@ -1,14 +1,14 @@
 {
-"for_date": "2026-11-27",
-"weekday": "Friday",
-"last_date": "2026-11-26",
-"last_rate": 11540,
-"lo": 11250,
-"mid": 11530,
-"hi": 11815,
+"for_date": "2026-11-28",
+"weekday": "Saturday",
+"last_date": "2026-11-27",
+"last_rate": 11600,
+"lo": 11400,
+"mid": 11620,
+"hi": 11845,
 "level": 80,
 "tag": "Neutral",
-"sigma_pct": 1.65,
+"sigma_pct": 1.28,
 "z": 1.49,
 "unchanged_share": {
 "n": 26,
@@ -16,24 +16,24 @@
 },
 "signal": {
 "used": true,
-"move_pct": -0.1,
+"move_pct": 0.2,
 "source": "COMEX gold x USD/INR"
 },
 "basis": "live market signal",
 "model": {
 "name": "Ridge regression on market factors",
 "status": "inactive",
-"oos_days": 144,
-"n_samples": 204,
-"gain_pct": 0.0,
+"oos_days": 145,
+"n_samples": 205,
+"gain_pct": 0.2,
 "dir_acc": 0.64
 },
 "backtest": {
 "days": 90,
-"coverage": 0.789,
-"avg_width": 389,
-"flat_width": 452,
-"typical_move": 109
+"coverage": 0.8,
+"avg_width": 391,
+"flat_width": 450,
+"typical_move": 107
 },
-"generated": "2026-11-27T00:26:57+05:30"
+"generated": "2026-11-27T16:50:23+05:30"
 }
