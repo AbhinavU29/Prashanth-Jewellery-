@@ -21,7 +21,7 @@ num = lambda x: float(x.replace(",", ""))
 ymd = lambda y, m, d: f"{int(y):04d}-{m:02d}-{int(d):02d}"
 REPORT = []
 
-def text(url):
+def raw(url):
     u = urllib.parse.urlparse(url)
     if u.scheme != "https" or u.hostname not in ALLOWED: raise ValueError("blocked url " + url)
     last = None
@@ -29,15 +29,48 @@ def text(url):
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:
                 if urllib.parse.urlparse(r.geturl()).hostname not in ALLOWED: raise ValueError("redirected off the allow-list")
-                html = r.read(MAX_BYTES).decode("utf-8", "ignore")
-            return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html))
+                return r.read(MAX_BYTES).decode("utf-8", "ignore")
         except Exception as e: last = e
     raise last
+
+def text(url):
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", raw(url)))
 
 def attempt(name, url, fn, *a):
     try: rows = fn(text(url), *a)
     except Exception as e: REPORT.append((name, f"failed: {str(e)[:70]}", 0)); return {}
     REPORT.append((name, "ok" if rows else "no rows found (layout changed?)", len(rows))); return rows
+
+def parse_kgr_revisions(raw_html):
+    matches = re.findall(r'data-22k="?(\d+)"?\s+data-24k="?(\d+)"?\s+data-date="?([\d-]+)"?\s+data-datetime="?([\d\-T:+]+)"?', raw_html)
+    by_date = {}
+    for g22, g24, d, dt in matches:
+        v22, v24 = int(g22), int(g24)
+        if not (GOLD_OK[0] <= v22 <= GOLD_OK[1]): continue
+        tm = dt.split("T")[1][:5] if "T" in dt else "09:30"
+        hr, mn = [int(x) for x in tm.split(":")[:2]]
+        period = "AM" if hr < 12 else "PM"
+        hr12 = hr % 12 or 12
+        time_str = f"{hr12}:{mn:02d} {period}"
+        by_date.setdefault(d, []).append({
+            "dt": dt, "time": time_str, "session": "Morning", "g22": v22, "g24": v24
+        })
+    revs = {}
+    for d, items in by_date.items():
+        items.sort(key=lambda x: x["dt"])
+        clean = []
+        for it in items:
+            if not clean or clean[-1]["g22"] != it["g22"]: clean.append(it)
+        if len(clean) > 1:
+            for idx, it in enumerate(clean):
+                if idx == 0: it["session"] = "Morning"
+                elif idx == 1:
+                    tm = int(it["dt"].split("T")[1][:2]) if "T" in it["dt"] else 13
+                    it["session"] = "Afternoon" if tm < 16 else "Evening"
+                else: it["session"] = "Evening"
+                it.pop("dt", None)
+            revs[d] = clean
+    return revs
 
 # ---- parsers -> {date: value}
 def g_livegold(b, y):  return {ymd(y, mnum(m), d): num(g) for _, d, m, g in re.findall(r"(\w{3}),\s*(\d{1,2})\s+([A-Za-z]{3,9})\s+₹\s*([\d,]+)\s+₹\s*[\d,]+\s+₹\s*[\d,]+", b)}
@@ -68,13 +101,27 @@ def merge(rows, found, today, yday):
 
 def main():
     now = datetime.now(IST); today = now.strftime("%Y-%m-%d"); yday = (now - timedelta(days=1)).strftime("%Y-%m-%d")
-    path = "data/rates.json"; data = json.load(open(path)); before = json.dumps([data["g22"], data["silver"]])
+    path = "data/rates.json"; data = json.load(open(path))
+    revisions = data.get("revisions", {})
+    before = json.dumps([data.get("g22", []), data.get("silver", []), data.get("revisions", {})], sort_keys=True)
     months = [(now.year, now.month)] + ([(now.year, now.month - 1) if now.month > 1 else (now.year - 1, 12)] if now.day <= 3 else [])
     lg, kg = {}, {}
     for y, m in months:
         n = MONTHS[m - 1]
+        kgr_url = f"https://keralagoldrates.com/daily-gold-prices-{n}-{y}/"
+        try:
+            kgr_raw = raw(kgr_url)
+            m_revs = parse_kgr_revisions(kgr_raw)
+            revisions.update(m_revs)
+            kgr_txt = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", kgr_raw))
+            kg_rows = g_kgr(kgr_txt, y)
+            for rd, ritems in m_revs.items():
+                if ritems: kg_rows[rd] = ritems[-1]["g22"]
+            kg.update(kg_rows)
+            REPORT.append((f"keralagoldrates {n}", "ok", len(kg_rows)))
+        except Exception as e:
+            REPORT.append((f"keralagoldrates {n}", f"failed: {str(e)[:70]}", 0))
         lg.update(attempt(f"livegoldkerala {n}", f"https://www.livegoldkerala.com/gold-rate-history/{y}/{n}", g_livegold, y))
-        kg.update(attempt(f"keralagoldrates {n}", f"https://keralagoldrates.com/daily-gold-prices-{n}-{y}/", g_kgr, y))
     gr = attempt("goodreturns gold", "https://www.goodreturns.in/gold-rates/kerala.html", g_goodreturns, now.year)
     gold = consensus([lg, kg, gr], GOLD_OK, yday)
     sg = attempt("goodreturns silver", "https://www.goodreturns.in/silver-rates/kerala.html", s_goodreturns, now.year)
@@ -87,9 +134,13 @@ def main():
     else:
         merge(data["g22"], gold, today, yday)
         if silver: merge(data["silver"], silver, today, yday)
-        if json.dumps([data["g22"], data["silver"]]) != before:
-            data["updated"] = now.isoformat(timespec="seconds"); json.dump(data, open(path, "w"), indent=0); lines.append(f"**Saved:** 22K {data['g22'][-1]}, silver {data['silver'][-1]}")
-        else: lines.append(f"No change: 22K {data['g22'][-1]}, silver {data['silver'][-1]}")
+        data["revisions"] = revisions
+        if json.dumps([data["g22"], data["silver"], data["revisions"]], sort_keys=True) != before:
+            data["updated"] = now.isoformat(timespec="seconds")
+            json.dump(data, open(path, "w"), indent=0)
+            lines.append(f"**Saved:** 22K {data['g22'][-1]}, silver {data['silver'][-1]}, revisions: {len(data['revisions'])}")
+        else:
+            lines.append(f"No change: 22K {data['g22'][-1]}, silver {data['silver'][-1]}")
         if data["g22"][-1][0] < yday: lines.append(f"::warning::Newest saved rate is {data['g22'][-1][0]} - sources have nothing newer yet")
     try:
         mp = "data/market.json"; mk = json.load(open(mp)); old = json.dumps(mk.get("ibja"), sort_keys=True); mk.setdefault("ibja", {}).update(ib)

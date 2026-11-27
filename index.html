@@ -148,6 +148,21 @@ nav{position:sticky;top:10px;z-index:30;margin-top:10px;padding:10px 16px;border
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.35s}
 .lgd{position:absolute;right:6px;top:-6px;display:flex;gap:14px;font-size:12px;color:var(--mut)}.lgd span::before{content:"";display:inline-block;width:16px;height:0;border-top:3px solid #0A84FF;margin-right:6px;vertical-align:middle}.lgd .lp::before{border-top-style:dashed}.chartbox{padding-top:18px}
 tr.pred{background:rgba(10,132,255,.07)}tr.pred td{font-style:italic}.badge.p{background:transparent;border:1px dashed #0A84FF;color:#0A84FF}
+.rev-wrap{margin:12px 0 10px;padding:11px 13px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);text-align:left;animation:fu .35s ease}
+[data-theme=light] .phone .rev-wrap{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22)}
+.rev-header{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11.5px;font-weight:600;margin-bottom:8px;letter-spacing:-.01em}
+.rev-pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:#D4AF37;box-shadow:0 0 8px #D4AF37;margin-right:6px;animation:pulse 1.6s infinite}
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:6px}
+.rev-box{padding:7px 9px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);transition:transform .2s,border-color .2s}
+.rev-box.active{background:rgba(212,175,55,.18);border-color:rgba(212,175,55,.5);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.rev-lbl{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#a8a3ad;font-weight:600}
+.rev-tag{font-size:8.5px;font-weight:700;color:#2b2100;background:#D4AF37;padding:1px 5px;border-radius:99px;letter-spacing:-.01em}
+.rev-val{font-size:15px;font-weight:700;color:#fff;margin-top:2px;font-variant-numeric:tabular-nums}
+.rev-time{font-size:10px;color:#a8a3ad;margin-top:1px}
+.badge.r{background:rgba(212,175,55,.16);color:#D4AF37;border:1px solid rgba(212,175,55,.45);margin-left:5px}
+.sub-revs{font-size:11px;color:var(--mut);margin-top:3px;font-variant-numeric:tabular-nums;line-height:1.4}
+.sub-revs span{display:inline-block}
+.chart-lbl text{font-family:Inter,-apple-system,sans-serif;pointer-events:none}
 .pchip{border-style:dashed}.fbar{margin:16px 0 6px}.trk{position:relative;height:8px;border-radius:9px;background:var(--soft)}.trk .band{position:absolute;top:0;bottom:0;border-radius:9px;background:linear-gradient(90deg,rgba(10,132,255,.35),rgba(94,92,230,.55));animation:grow .9s cubic-bezier(.2,.8,.2,1) both;transform-origin:left}@keyframes grow{from{transform:scaleX(0)}}
 .trk .mk,.trk .mid{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%)}.trk .mk{background:#1D1D1F;border:3px solid var(--card)}.trk .mid{background:#fff;border:3px solid #0A84FF}
 .fl2{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-top:8px}.fchips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.fc{font-size:12px;padding:6px 12px;border-radius:999px;background:var(--soft)}
@@ -209,6 +224,7 @@ body{padding-bottom:env(safe-area-inset-bottom,0px)}
       <div class="phone">
         <h3>22 Karat gold</h3><small id="phDate"></small>
         <div class="big" id="phRate"></div><small id="phDelta"></small>
+        <div id="phRevisions" class="rev-wrap" style="display:none"></div>
         <div class="wave" id="wave"></div>
         <div class="wlg" id="wlg"></div>
         <div class="pill"><span id="phPub"></span><span class="gt" style="font-weight:600">Published</span></div>
@@ -276,10 +292,19 @@ body{padding-bottom:env(safe-area-inset-bottom,0px)}
 
 <script>
 /* Fallback rates (₹ per gram). The live copy is data/rates.json, refreshed daily by GitHub Actions. */
-var G22 = [["2026-05-01",13965],["2026-05-02",13835],["2026-05-03",13835],["2026-05-04",13835],["2026-05-05",13675],["2026-05-06",13870],["2026-05-07",13975],["2026-05-08",13995],["2026-05-09",13965],["2026-05-10",13965],["2026-05-11",13945],["2026-05-12",14115],["2026-05-13",15390],["2026-05-14",14880],["2026-05-15",14675],["2026-05-16",14385],["2026-05-17",14385],["2026-05-18",14320],["2026-05-19",14395],["2026-05-20",14515],["2026-05-21",14660],["2026-05-22",14620],["2026-05-23",14580],["2026-05-24",14580],["2026-05-25",14610],["2026-05-26",14565],["2026-05-27",14510],["2026-05-28",14305],["2026-05-29",14450],["2026-05-30",14395],["2026-05-31",14395],["2026-06-01",14320],["2026-06-02",14320],["2026-06-03",14222],["2026-06-04",14310],["2026-06-05",14275],["2026-06-06",14000],["2026-06-07",14128],["2026-06-08",13905],["2026-06-09",14040],["2026-06-10",13645],["2026-06-11",13350],["2026-06-12",13620],["2026-06-13",13665],["2026-06-14",13539],["2026-06-15",13890],["2026-06-16",13875],["2026-06-17",13850],["2026-06-18",13705],["2026-06-19",13370],["2026-06-20",13390],["2026-06-21",13279],["2026-06-22",13430],["2026-06-23",13255],["2026-06-24",13230],["2026-06-25",12955],["2026-06-26",12980],["2026-06-27",13195],["2026-06-28",12812],["2026-06-29",13110],["2026-06-30",13020],["2026-07-01",12905],["2026-07-02",13180],["2026-07-03",13475],["2026-07-04",13450],["2026-07-05",13405],["2026-07-06",13440],["2026-07-07",13315],["2026-07-08",13245],["2026-07-09",13240],["2026-07-10",13275],["2026-07-11",13230],["2026-07-12",13133],["2026-07-13",13100],["2026-07-14",13090],["2026-07-15",13160],["2026-07-16",13135],["2026-07-17",13065],["2026-07-18",13135],["2026-07-19",12930],["2026-07-20",13150],["2026-07-21",13220],["2026-07-22",13430],["2026-07-23",13400],["2026-07-24",13230],["2026-07-25",13285],["2026-07-26",13170],["2026-07-27",13370],["2026-07-28",13215],["2026-07-29",13155],["2026-07-30",13230],["2026-07-31",13255],["2026-08-01",13220],["2026-08-02",13086],["2026-08-03",13220],["2026-08-04",13200],["2026-08-05",13460],["2026-08-06",13725],["2026-08-07",13740],["2026-08-08",13965],["2026-08-09",13705],["2026-08-10",13930],["2026-08-11",14100],["2026-08-12",14195],["2026-08-13",14080],["2026-08-14",14015],["2026-08-15",14220],["2026-08-16",13957],["2026-08-17",14270],["2026-08-18",14290],["2026-08-19",14205],["2026-08-20",14600],["2026-08-21",14710],["2026-08-22",14950],["2026-08-23",14713],["2026-08-24",15030],["2026-08-25",15010],["2026-08-26",14787],["2026-08-27",14725],["2026-08-28",14770],["2026-08-29",14505],["2026-08-30",14617],["2026-08-31",14370],["2026-09-01",14125],["2026-09-02",13935],["2026-09-03",14240],["2026-09-04",14360],["2026-09-05",14190],["2026-09-06",14187],["2026-09-07",14130],["2026-09-08",14240],["2026-09-09",14145],["2026-09-10",14255],["2026-09-11",14015],["2026-09-12",14155],["2026-09-13",14015],["2026-09-14",14125],["2026-09-15",14040],["2026-09-16",14065],["2026-09-17",14010],["2026-09-18",14155],["2026-09-19",14285],["2026-09-20",14081],["2026-09-21",14270],["2026-09-22",14185],["2026-09-23",14135],["2026-09-24",13995],["2026-09-25",14010],["2026-09-26",13995],["2026-09-27",13934],["2026-09-28",13765],["2026-09-29",13640],["2026-09-30",13710],["2026-10-01",13680],["2026-10-02",13775],["2026-10-03",13675],["2026-10-04",13675],["2026-10-05",13675],["2026-10-06",13660],["2026-10-07",13770],["2026-10-08",13710],["2026-10-09",13815],["2026-10-10",13880],["2026-10-11",13860],["2026-10-12",13840],["2026-10-13",13685],["2026-10-14",13590],["2026-10-15",13515],["2026-10-16",13525],["2026-10-17",13535],["2026-10-18",13553],["2026-10-19",13570],["2026-10-20",13490],["2026-10-21",13390],["2026-10-22",13235],["2026-10-23",13060],["2026-10-24",13070],["2026-10-25",13078],["2026-10-26",13085],["2026-10-27",13135],["2026-10-28",13195],["2026-10-29",13195],["2026-10-30",13040],["2026-10-31",12730],["2026-11-01",12730],["2026-11-02",12775],["2026-11-03",12800],["2026-11-04",13090],["2026-11-05",13385],["2026-11-06",13150],["2026-11-07",13160],["2026-11-08",13160],["2026-11-09",13255],["2026-11-10",13080],["2026-11-11",13015],["2026-11-12",12815],["2026-11-13",12590],["2026-11-14",12615],["2026-11-15",12615],["2026-11-16",12540],["2026-11-17",12470],["2026-11-18",12215],["2026-11-19",11980],["2026-11-20",11510],["2026-11-21",11465],["2026-11-22",11465]];
-var SIL = [["2026-10-14",245],["2026-10-15",240],["2026-10-16",240],["2026-10-17",240],["2026-10-18",240],["2026-10-19",240],["2026-10-20",240],["2026-10-21",230],["2026-10-22",225],["2026-10-23",220],["2026-10-24",220],["2026-10-25",220],["2026-10-26",220],["2026-10-27",220],["2026-10-28",220],["2026-10-29",215],["2026-10-30",210],["2026-10-31",200],["2026-11-01",200],["2026-11-02",200],["2026-11-03",200],["2026-11-04",200],["2026-11-05",210],["2026-11-06",205],["2026-11-07",205],["2026-11-08",205],["2026-11-09",205],["2026-11-10",205],["2026-11-11",200],["2026-11-12",200],["2026-11-13",195],["2026-11-14",195],["2026-11-15",195],["2026-11-16",190],["2026-11-17",190],["2026-11-18",185],["2026-11-19",180],["2026-11-20",175],["2026-11-21",175],["2026-11-22",175]];
-var FC = {"for_date":"2026-11-23","weekday":"Monday","last_date":"2026-11-22","last_rate":11465,"lo":11210,"mid":11465,"hi":11730,"level":80,"tag":"Neutral","sigma_pct":1.52,"z":1.5,"unchanged_share":{"n":26,"share":0.04},"signal":{"used":false},"basis":"history only","model":{"name":"Ridge regression on market factors","status":"collecting","oos_days":0,"n_samples":0},"backtest":{"days":90,"coverage":0.8,"avg_width":395,"flat_width":454,"typical_move":106},"generated":"2026-11-22T14:34:25+05:30"};
-var PUBLISHED = "2026-11-22T14:32:00+05:30", SOURCE = "Kerala board rate (AKGSMA) via livegoldkerala.com, keralagoldrates.com and Goodreturns";
+var G22 = [["2026-05-01",13965],["2026-05-02",13835],["2026-05-03",13835],["2026-05-04",13835],["2026-05-05",13675],["2026-05-06",13870],["2026-05-07",13975],["2026-05-08",13995],["2026-05-09",13965],["2026-05-10",13965],["2026-05-11",13945],["2026-05-12",14115],["2026-05-13",15390],["2026-05-14",14880],["2026-05-15",14675],["2026-05-16",14385],["2026-05-17",14385],["2026-05-18",14320],["2026-05-19",14395],["2026-05-20",14515],["2026-05-21",14660],["2026-05-22",14620],["2026-05-23",14580],["2026-05-24",14580],["2026-05-25",14610],["2026-05-26",14565],["2026-05-27",14510],["2026-05-28",14305],["2026-05-29",14450],["2026-05-30",14395],["2026-05-31",14395],["2026-06-01",14320],["2026-06-02",14320],["2026-06-03",14222],["2026-06-04",14310],["2026-06-05",14275],["2026-06-06",14000],["2026-06-07",14128],["2026-06-08",13905],["2026-06-09",14040],["2026-06-10",13645],["2026-06-11",13350],["2026-06-12",13620],["2026-06-13",13665],["2026-06-14",13539],["2026-06-15",13890],["2026-06-16",13875],["2026-06-17",13850],["2026-06-18",13705],["2026-06-19",13370],["2026-06-20",13390],["2026-06-21",13279],["2026-06-22",13430],["2026-06-23",13255],["2026-06-24",13230],["2026-06-25",12955],["2026-06-26",12980],["2026-06-27",13195],["2026-06-28",12812],["2026-06-29",13110],["2026-06-30",13020],["2026-07-01",12905],["2026-07-02",13180],["2026-07-03",13475],["2026-07-04",13450],["2026-07-05",13405],["2026-07-06",13440],["2026-07-07",13315],["2026-07-08",13245],["2026-07-09",13240],["2026-07-10",13275],["2026-07-11",13230],["2026-07-12",13133],["2026-07-13",13100],["2026-07-14",13090],["2026-07-15",13160],["2026-07-16",13135],["2026-07-17",13065],["2026-07-18",13135],["2026-07-19",12930],["2026-07-20",13150],["2026-07-21",13220],["2026-07-22",13430],["2026-07-23",13400],["2026-07-24",13230],["2026-07-25",13285],["2026-07-26",13170],["2026-07-27",13370],["2026-07-28",13215],["2026-07-29",13155],["2026-07-30",13230],["2026-07-31",13255],["2026-08-01",13220],["2026-08-02",13086],["2026-08-03",13220],["2026-08-04",13200],["2026-08-05",13460],["2026-08-06",13725],["2026-08-07",13740],["2026-08-08",13965],["2026-08-09",13705],["2026-08-10",13930],["2026-08-11",14100],["2026-08-12",14195],["2026-08-13",14080],["2026-08-14",14015],["2026-08-15",14220],["2026-08-16",13957],["2026-08-17",14270],["2026-08-18",14290],["2026-08-19",14205],["2026-08-20",14600],["2026-08-21",14710],["2026-08-22",14950],["2026-08-23",14713],["2026-08-24",15030],["2026-08-25",15010],["2026-08-26",14787],["2026-08-27",14725],["2026-08-28",14770],["2026-08-29",14505],["2026-08-30",14617],["2026-08-31",14370],["2026-09-01",14125],["2026-09-02",13935],["2026-09-03",14240],["2026-09-04",14360],["2026-09-05",14190],["2026-09-06",14187],["2026-09-07",14130],["2026-09-08",14240],["2026-09-09",14145],["2026-09-10",14255],["2026-09-11",14015],["2026-09-12",14155],["2026-09-13",14015],["2026-09-14",14125],["2026-09-15",14040],["2026-09-16",14065],["2026-09-17",14010],["2026-09-18",14155],["2026-09-19",14285],["2026-09-20",14081],["2026-09-21",14270],["2026-09-22",14185],["2026-09-23",14135],["2026-09-24",13995],["2026-09-25",14010],["2026-09-26",13995],["2026-09-27",13934],["2026-09-28",13765],["2026-09-29",13640],["2026-09-30",13710],["2026-10-01",13680],["2026-10-02",13775],["2026-10-03",13675],["2026-10-04",13675],["2026-10-05",13675],["2026-10-06",13660],["2026-10-07",13770],["2026-10-08",13710],["2026-10-09",13815],["2026-10-10",13880],["2026-10-11",13860],["2026-10-12",13840],["2026-10-13",13685],["2026-10-14",13590],["2026-10-15",13515],["2026-10-16",13525],["2026-10-17",13535],["2026-10-18",13553],["2026-10-19",13570],["2026-10-20",13490],["2026-10-21",13390],["2026-10-22",13235],["2026-10-23",13060],["2026-10-24",13070],["2026-10-25",13078],["2026-10-26",13085],["2026-10-27",13135],["2026-10-28",13195],["2026-10-29",13195],["2026-10-30",13040],["2026-10-31",12730],["2026-11-01",12730],["2026-11-02",12775],["2026-11-03",12800],["2026-11-04",13090],["2026-11-05",13385],["2026-11-06",13150],["2026-11-07",13160],["2026-11-08",13160],["2026-11-09",13255],["2026-11-10",13080],["2026-11-11",13015],["2026-11-12",12815],["2026-11-13",12590],["2026-11-14",12615],["2026-11-15",12615],["2026-11-16",12540],["2026-11-17",12470],["2026-11-18",12215],["2026-11-19",11980],["2026-11-20",11510],["2026-11-21",11465],["2026-11-22",11465],["2026-11-23",11600],["2026-11-24",11715],["2026-11-25",11300],["2026-11-26",11440],["2026-11-27",11770]];
+var SIL = [["2026-10-14",245],["2026-10-15",240],["2026-10-16",240],["2026-10-17",240],["2026-10-18",240],["2026-10-19",240],["2026-10-20",240],["2026-10-21",230],["2026-10-22",225],["2026-10-23",220],["2026-10-24",220],["2026-10-25",220],["2026-10-26",220],["2026-10-27",220],["2026-10-28",220],["2026-10-29",215],["2026-10-30",210],["2026-10-31",200],["2026-11-01",200],["2026-11-02",200],["2026-11-03",200],["2026-11-04",200],["2026-11-05",210],["2026-11-06",205],["2026-11-07",205],["2026-11-08",205],["2026-11-09",205],["2026-11-10",205],["2026-11-11",200],["2026-11-12",200],["2026-11-13",195],["2026-11-14",195],["2026-11-15",195],["2026-11-16",190],["2026-11-17",190],["2026-11-18",185],["2026-11-19",180],["2026-11-20",175],["2026-11-21",175],["2026-11-22",175],["2026-11-23",175],["2026-11-24",175],["2026-11-25",165],["2026-11-26",165],["2026-11-27",170]];
+var REVS = {
+  "2026-11-04":[{"session":"Morning","time":"9:30 AM","g22":12825,"g24":13991},{"session":"Afternoon","time":"1:30 PM","g22":13090,"g24":14280}],
+  "2026-11-06":[{"session":"Morning","time":"9:30 AM","g22":13385,"g24":14602},{"session":"Afternoon","time":"1:00 PM","g22":13150,"g24":14345}],
+  "2026-11-10":[{"session":"Morning","time":"9:30 AM","g22":13210,"g24":14411},{"session":"Evening","time":"5:30 PM","g22":13080,"g24":14269}],
+  "2026-11-13":[{"session":"Morning","time":"9:30 AM","g22":12695,"g24":13849},{"session":"Afternoon","time":"2:00 PM","g22":12590,"g24":13735}],
+  "2026-11-25":[{"session":"Morning","time":"9:30 AM","g22":11420,"g24":12458},{"session":"Afternoon","time":"2:30 PM","g22":11300,"g24":12327}],
+  "2026-11-26":[{"session":"Morning","time":"9:30 AM","g22":11540,"g24":12589},{"session":"Afternoon","time":"2:30 PM","g22":11440,"g24":12480}],
+  "2026-11-27":[{"session":"Morning","time":"9:30 AM","g22":11600,"g24":12655},{"session":"Afternoon","time":"2:30 PM","g22":11770,"g24":12840}]
+};
+var FC = {"for_date":"2026-11-28","weekday":"Saturday","last_date":"2026-11-27","last_rate":11770,"lo":11510,"mid":11770,"hi":12030,"level":80,"tag":"Neutral","sigma_pct":1.52,"z":1.5,"unchanged_share":{"n":26,"share":0.04},"signal":{"used":false},"basis":"history only","model":{"name":"Ridge regression on market factors","status":"collecting","oos_days":0,"n_samples":0},"backtest":{"days":90,"coverage":0.8,"avg_width":395,"flat_width":454,"typical_move":106},"generated":"2026-11-27T14:34:25+05:30"};
+var PUBLISHED = "2026-11-27T14:30:00+05:30", SOURCE = "Kerala board rate (AKGSMA) via livegoldkerala.com, keralagoldrates.com and Goodreturns";
 var ASSET = {g22:"22K Gold",g24:"24K Gold",silver:"Silver"}, sel = "g22", view = "chart", checkedAt = new Date();
 var $ = function(id){return document.getElementById(id)};
 var inr = function(n){return "₹"+Math.round(n).toLocaleString("en-IN")};
@@ -295,18 +320,40 @@ function dTxt(k){var c=chg(k);return c.diff===0?(trend(k).txt||"No change vs yes
 function mseries(k){var m=monKey();return series(k).filter(function(x){return x.d.slice(0,7)===m})}
 function stats(k){var s=mseries(k),lo=s[0],hi=s[0],sum=0;s.forEach(function(x){if(x.v<lo.v)lo=x;if(x.v>hi.v)hi=x;sum+=x.v});return {s:s,lo:lo,hi:hi,avg:sum/s.length}}
 
+function renderIntradayRevisions(d){
+  var el=$("phRevisions");if(!el)return;
+  var revList=REVS&&REVS[d];
+  if(!revList||revList.length<2){el.style.display="none";el.innerHTML="";return}
+  el.style.display="block";
+  var latestIdx=revList.length-1,firstRate=revList[0].g22,latestRate=revList[latestIdx].g22;
+  var diff=latestRate-firstRate;
+  var diffTxt=diff===0?"Same as morning":(diff>0?"▲ +₹"+diff:"▼ −₹"+Math.abs(diff))+" vs morning";
+  var diffCol=diff>0?"#FF6961":diff<0?"#30D158":"#D4AF37";
+  var h='<div class="rev-header"><span><i class="rev-pulse"></i>Today’s Price Updates ('+revList.length+')</span><span style="color:'+diffCol+'">'+diffTxt+'</span></div><div class="rev-grid">';
+  revList.forEach(function(r,i){
+    var isLatest=(i===latestIdx);
+    h+='<div class="rev-box'+(isLatest?' active':'')+'"><div class="rev-lbl"><span>'+r.session+'</span>'+(isLatest?'<span class="rev-tag">Latest</span>':'')+'</div><div class="rev-val">'+inr(r.g22)+'</div><div class="rev-time">'+r.time+'</div></div>';
+  });
+  h+='</div>';
+  el.innerHTML=h;
+}
+
 function renderHero(){
   var g=last("g22"),s=last("silver"),n=G22.length,c=chg("g22");
   $("phRate").textContent=inr(g.v);$("phDate").textContent=dObj(g.d).toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"});
   $("phDelta").textContent=dTxt("g22");$("c24").textContent=inr(last("g24").v);$("c24d").textContent=dTxt("g24");
   $("cpav").textContent=inr(g.v*8);$("cs").textContent=inr(s.v);$("csd").textContent=dTxt("silver");$("ckg").textContent=inr(s.v*1000);
+  renderIntradayRevisions(g.d);
   var ser=series("g22").slice(-30),mn=Math.min.apply(null,ser.map(function(x){return x.v})),mx=Math.max.apply(null,ser.map(function(x){return x.v}));
   $("wave").innerHTML=ser.map(function(x,i){var t=(x.v-mn)/(mx-mn||1),h=22+t*78;return '<i class="'+(i===ser.length-1?"now":"")+'" title="'+dFmt(x.d)+": "+inr(x.v)+'" style="height:'+h+'%;background:hsl('+Math.round(135-t*135)+',78%,56%)"></i>'}).join("");
   $("wlg").innerHTML='<span style="color:#30D158">Low '+inr(mn)+'</span><span>Last 30 days</span><span style="color:#FF6961">High '+inr(mx)+'</span>';
   [["phDelta","g22","#FF6961","#30D158"],["c24d","g24","#FF3B30","#34C759"],["csd","silver","#FF3B30","#34C759"]].forEach(function(a){var d=trend(a[1]).sign;$(a[0]).style.color=d>0?a[2]:d<0?a[3]:""});
   function tint(id,k,up,dn,cls){var d=trend(k).sign,el=$(id),p=el.parentNode;el.style.color=d>0?up:d<0?dn:"";if(cls&&p&&p.classList){p.classList.remove("fu","fd");if(d)p.classList.add(d>0?"fu":"fd")}}
   tint("phRate","g22","#FF6961","#30D158",false);tint("c24","g24","#FF3B30","#34C759",true);tint("cpav","g22","#FF3B30","#34C759",true);tint("cs","silver","#FF3B30","#34C759",true);tint("ckg","silver","#FF3B30","#34C759",true);
-  var p=new Date(PUBLISHED);$("phPub").textContent=p.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",timeZone:"Asia/Kolkata"})+" IST";
+  var p=new Date(PUBLISHED);
+  var revList=REVS&&REVS[g.d];
+  var revTag=(revList&&revList.length>1)?(" · "+revList[revList.length-1].session+" Revision"):"";
+  $("phPub").textContent=p.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",timeZone:"Asia/Kolkata"})+" IST"+revTag;
 }
 function renderStatus(){
   var l=last("g22").d,t=today(),fresh=l===t,behind=Math.round((dObj(t)-dObj(l))/864e5);
@@ -339,12 +386,86 @@ function renderChart(){
   var step=Math.ceil(s.length/7),tk=[];s.forEach(function(x,i){if(i%step===0||i===s.length-1)tk.push(i)});if(tk.length>1&&pts[tk[tk.length-1]][0]-pts[tk[tk.length-2]][0]<64)tk.splice(tk.length-2,1);
   tk.forEach(function(i){h+='<text x="'+pts[i][0]+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="#8a828a">'+dFmt(s[i].d)+'</text>'});
   h+='<path d="'+path+' L'+pts[pts.length-1][0]+','+(H-B)+' L'+pts[0][0]+','+(H-B)+' Z" fill="url(#af)" class="ca"/><path d="'+path+'" pathLength="1" class="cl" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linecap="round" style="filter:drop-shadow(0 4px 8px rgba(123,63,228,.35))"/>';
-  var nl=function(x,y){var l=pts[pts.length-1];return Math.abs(x-l[0])<140&&Math.abs(y-l[1])<45};
-  [[st.hi,"#FF3B30","High",-12],[st.lo,"#34C759","Low",20]].forEach(function(m){var x=X(m[0].d),y=Y(m[0].v);
-    h+='<circle cx="'+x+'" cy="'+y+'" r="6" fill="'+m[1]+'" stroke="#fff" stroke-width="2.5"/><text x="'+Math.min(Math.max(x,70),W-70)+'" y="'+(y+m[3])+'" text-anchor="middle" font-size="12" font-weight="600" fill="'+m[1]+'">'+(nl(x,y)?"":m[2]+" "+inr(m[0].v))+'</text>'});
-  var lp=pts[pts.length-1],ls=s[s.length-1],msx=months(),curM=monKey()===msx[msx.length-1],lab=(!curM?"Month-end":ls.d===today()?"Today":"Latest")+" "+inr(ls.v),bw=lab.length*7.3+24,low=ls.d===st.lo.d,lx=pf?lp[0]-bw+14:W-6-bw,by=low?lp[1]-38:lp[1]+14;
-  h+='<circle cx="'+lp[0]+'" cy="'+lp[1]+'" r="8" fill="#D4AF37" opacity=".35"><animate attributeName="r" values="7;17;7" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".45;0;.45" dur="2s" repeatCount="indefinite"/></circle><circle cx="'+lp[0]+'" cy="'+lp[1]+'" r="6.5" fill="#D4AF37" stroke="#fff" stroke-width="2.5"/>';
-  h+='<rect x="'+lx+'" y="'+by+'" width="'+bw+'" height="24" rx="12" fill="#D4AF37"/><text x="'+(lx+bw/2)+'" y="'+(by+16)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#2b2100">'+lab+'</text>';
+    var lp=pts[pts.length-1],ls=s[s.length-1],tx=lp[0],ty=lp[1];
+  var msx=months(),curM=monKey()===msx[msx.length-1];
+  var isTodayLow=(ls.d===st.lo.d),isTodayHigh=(ls.d===st.hi.d);
+  var todayPrefix=(!curM?"Month-end":ls.d===today()?"Today":"Latest");
+  var todayExtra=isTodayLow?" (Low)":isTodayHigh?" (High)":"";
+  var lab=todayPrefix+todayExtra+" "+inr(ls.v);
+  var tw=Math.round(lab.length*7.4+24),th=24;
+
+  var hx=X(st.hi.d),hy=Y(st.hi.v),hText="High "+inr(st.hi.v),hw=Math.round(hText.length*7+18),hh=20;
+  var lx=X(st.lo.d),ly=Y(st.lo.v),lText="Low "+inr(st.lo.v),lw=Math.round(lText.length*7+18),lh=20;
+
+  function ov(a,b,p){p=p||4;return !(a.x+a.w+p<b.x||b.x+b.w+p<a.x||a.y+a.h+p<b.y||b.y+b.h+p<a.y)}
+  function cv(b,px,py,p){p=p||6;return px>=b.x-p&&px<=b.x+b.w+p&&py>=b.y-p&&py<=b.y+b.h+p}
+  function pick(cands,obs,ptsAvoid){
+    for(var i=0;i<cands.length;i++){
+      var c={x:Math.max(L+4,Math.min(W-R-cands[i].w-4,cands[i].x)),y:Math.max(T-12,Math.min(H-B-cands[i].h+6,cands[i].y)),w:cands[i].w,h:cands[i].h};
+      var hit=false;
+      if(obs){for(var j=0;j<obs.length;j++){if(obs[j]&&ov(c,obs[j])){hit=true;break}}}
+      if(!hit&&ptsAvoid){for(var k=0;k<ptsAvoid.length;k++){if(ptsAvoid[k]&&cv(c,ptsAvoid[k][0],ptsAvoid[k][1])){hit=true;break}}}
+      if(!hit)return c;
+    }
+    var fb=cands[0];return {x:Math.max(L+4,Math.min(W-R-fb.w-4,fb.x)),y:Math.max(T-12,Math.min(H-B-fb.h+6,fb.y)),w:fb.w,h:fb.h};
+  }
+
+  if(!isTodayHigh){
+    h+='<circle cx="'+hx+'" cy="'+hy+'" r="6" fill="#FF3B30" stroke="#fff" stroke-width="2.5"/>';
+  }
+  if(!isTodayLow){
+    h+='<circle cx="'+lx+'" cy="'+ly+'" r="6" fill="#34C759" stroke="#fff" stroke-width="2.5"/>';
+  }
+  h+='<circle cx="'+tx+'" cy="'+ty+'" r="8" fill="#D4AF37" opacity=".35"><animate attributeName="r" values="7;17;7" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".45;0;.45" dur="2s" repeatCount="indefinite"/></circle><circle cx="'+tx+'" cy="'+ty+'" r="6.5" fill="#D4AF37" stroke="#fff" stroke-width="2.5"/>';
+
+  var lBox=null;
+  if(!isTodayLow){
+    var lPrefBelow=(ly+lh+8<=H-B-4);
+    var lCands=[
+      {x:lx-lw/2,y:lPrefBelow?ly+8:ly-lh-8,w:lw,h:lh},
+      {x:lx-lw/2,y:lPrefBelow?ly-lh-8:ly+8,w:lw,h:lh},
+      {x:lx-lw-8,y:ly-lh/2,w:lw,h:lh},
+      {x:lx+8,y:ly-lh/2,w:lw,h:lh},
+      {x:lx-lw-6,y:ly-lh-6,w:lw,h:lh},
+      {x:lx-lw-6,y:ly+6,w:lw,h:lh}
+    ];
+    lBox=pick(lCands,[],[[tx,ty],[hx,hy]]);
+  }
+
+  var hBox=null;
+  if(!isTodayHigh){
+    var hPrefAbove=(hy-hh-8>=8);
+    var hCands=[
+      {x:hx-hw/2,y:hPrefAbove?hy-hh-8:hy+8,w:hw,h:hh},
+      {x:hx-hw/2,y:hPrefAbove?hy+8:hy-hh-8,w:hw,h:hh},
+      {x:hx-hw-8,y:hy-hh/2,w:hw,h:hh},
+      {x:hx+8,y:hy-hh/2,w:hw,h:hh}
+    ];
+    hBox=pick(hCands,[lBox],[[tx,ty],[lx,ly]]);
+  }
+
+  var tPrefAbove=(isTodayLow||ty>(T+H-B)/2);
+  var tCands=[
+    {x:tx-tw/2,y:tPrefAbove?ty-th-9:ty+9,w:tw,h:th},
+    {x:tx-tw-8,y:ty-th/2,w:tw,h:th},
+    {x:tx-tw+8,y:tPrefAbove?ty-th-9:ty+9,w:tw,h:th},
+    {x:tx-tw/2,y:tPrefAbove?ty+9:ty-th-9,w:tw,h:th},
+    {x:tx-tw-8,y:tPrefAbove?ty-th-9:ty+9,w:tw,h:th},
+    {x:tx+8,y:ty-th/2,w:tw,h:th}
+  ];
+  if(lBox){
+    tCands.push({x:tx-tw/2,y:lBox.y-th-6,w:tw,h:th});
+    tCands.push({x:tx-tw/2,y:lBox.y+lBox.h+6,w:tw,h:th});
+  }
+  var tBox=pick(tCands,[hBox,lBox],[[hx,hy],[lx,ly]]);
+
+  if(hBox){
+    h+='<g class="chart-lbl"><rect x="'+hBox.x+'" y="'+hBox.y+'" width="'+hBox.w+'" height="'+hBox.h+'" rx="'+(hBox.h/2)+'" fill="rgba(255,59,48,.16)" stroke="#FF3B30" stroke-width="1.2"/><text x="'+(hBox.x+hBox.w/2)+'" y="'+(hBox.y+hBox.h/2+4)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#FF3B30">'+hText+'</text></g>';
+  }
+  if(lBox){
+    h+='<g class="chart-lbl"><rect x="'+lBox.x+'" y="'+lBox.y+'" width="'+lBox.w+'" height="'+lBox.h+'" rx="'+(lBox.h/2)+'" fill="rgba(52,199,89,.18)" stroke="#34C759" stroke-width="1.2"/><text x="'+(lBox.x+lBox.w/2)+'" y="'+(lBox.y+lBox.h/2+4)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#34C759">'+lText+'</text></g>';
+  }
+  h+='<g class="chart-lbl"><rect x="'+tBox.x+'" y="'+tBox.y+'" width="'+tBox.w+'" height="'+tBox.h+'" rx="'+(tBox.h/2)+'" fill="#D4AF37" style="filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))"/><text x="'+(tBox.x+tBox.w/2)+'" y="'+(tBox.y+tBox.h/2+4)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#2b2100">'+lab+'</text></g>';
   h+='<line id="cx" y1="'+T+'" y2="'+(H-B)+'" stroke="#0066CC" stroke-opacity=".4" stroke-dasharray="4 4" visibility="hidden"/><circle id="cd" r="6" fill="#fff" stroke="#0066CC" stroke-width="2.5" visibility="hidden"/>';
   $("svg").innerHTML=h;
   var svg=$("svg"),tip=$("tip");
@@ -363,7 +484,10 @@ function renderTable(){
   dayList(monKey()).forEach(function(d){var lbl=dObj(d).toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short",timeZone:"Asia/Kolkata"});
     if(!(d in by)){h+='<tr class="na"><td class="c-d">'+lbl+'</td><td class="c-na" colspan="3">No verified rate</td></tr>';return}
     var v=by[d],df=pv===null?null:v-pv,isH=d===st.hi.d,isL=d===st.lo.d,isT=d===st.s[st.s.length-1].d&&monKey()===months()[months().length-1],cc=df===null||df===0?"fl":df>0?"up":"dn",ct=df===null?"—":df===0?"No change":(df>0?"+":"−")+inr(Math.abs(df));pv=v;
-    h+='<tr class="'+(isH?"hi":isL?"lo":isT?"tdy":"")+'"><td class="c-d">'+lbl+(isH?'<span class="badge">Highest</span>':"")+(isL?'<span class="badge">Lowest</span>':"")+(isT?'<span class="badge t">'+(d===today()?"Today":"Latest")+'</span>':"")+'</td><td class="c-r"><b>'+inr(v)+'</b></td><td class="c-c '+cc+'">'+ct+'</td><td class="c-p" data-l="'+(silver?"Per kg":"Per pavan")+'">'+inr(silver?v*1000:v*8)+'</td></tr>'});
+    var revList=(!silver&&REVS&&REVS[d])||null;
+    var revBadge=(revList&&revList.length>1)?('<span class="badge r">'+revList.length+' updates</span>'):"";
+    var revSub=(revList&&revList.length>1)?('<div class="sub-revs">'+revList.map(function(r){return '<span>'+r.session+' ('+r.time+'): '+inr(r.g22)+'</span>'}).join(' · ')+'</div>'):"";
+    h+='<tr class="'+(isH?"hi":isL?"lo":isT?"tdy":"")+'"><td class="c-d">'+lbl+(isH?'<span class="badge">Highest</span>':"")+(isL?'<span class="badge">Lowest</span>':"")+(isT?'<span class="badge t">'+(d===today()?"Today":"Latest")+'</span>':"")+revBadge+'</td><td class="c-r"><b>'+inr(v)+'</b>'+revSub+'</td><td class="c-c '+cc+'">'+ct+'</td><td class="c-p" data-l="'+(silver?"Per kg":"Per pavan")+'">'+inr(silver?v*1000:v*8)+'</td></tr>'});
   if(FC&&!silver&&monKey()===months()[months().length-1]){var kk=sel==="g24"?24/22:1,pa=Math.round(FC.lo*kk),pb=Math.round(FC.hi*kk);h+='<tr class="pred"><td class="c-d">'+dObj(FC.for_date).toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short",timeZone:"Asia/Kolkata"})+'<span class="badge p">Predicted</span></td><td class="c-r"><b>'+inr(pa)+' – '+inr(pb)+'</b></td><td class="c-c fl">'+FC.level+'% range</td><td class="c-p" data-l="Per pavan">'+inr(pa*8)+' – '+inr(pb*8)+'</td></tr>'}
   $("tableView").innerHTML=h+"</tbody></table>";
 }
@@ -423,7 +547,7 @@ function okRows(r,lo,hi){if(!Array.isArray(r)||r.length<10||r.length>800)return 
 function okFC(j){return !!j&&typeof j==="object"&&[j.lo,j.hi,j.mid,j.last_rate].every(function(v){return typeof v==="number"&&isFinite(v)&&v>1000&&v<100000})&&j.lo<=j.hi&&DRE.test(j.for_date)&&DRE.test(j.last_date)&&(j.tag==="Neutral"||j.tag==="Leaning up"||j.tag==="Leaning down")&&/^[A-Za-z]{6,9}$/.test(j.weekday||"")&&j.level===80}
 function loadForecast(){return fetch("data/forecast.json?t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){if(okFC(j)){FC=j;renderForecast();render()}}).catch(function(){})}
 function loadRates(manual){lastLoad=Date.now();loadForecast();return fetch("data/rates.json?t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
-  if(j&&okRows(j.g22,1000,100000)&&(!j.silver||okRows(j.silver,10,5000))){G22=j.g22;if(j.silver)SIL=j.silver;if(typeof j.updated==="string"&&!isNaN(Date.parse(j.updated)))PUBLISHED=j.updated;SOURCE=String(j.source||SOURCE).slice(0,120);return "Rates loaded from the daily update."}return "The daily rates file is empty."}).catch(function(){return manual?"Could not load the daily rates file. Showing the last known rates.":""})}
+  if(j&&okRows(j.g22,1000,100000)&&(!j.silver||okRows(j.silver,10,5000))){G22=j.g22;if(j.silver)SIL=j.silver;if(j.revisions&&typeof j.revisions==="object")REVS=j.revisions;if(typeof j.updated==="string"&&!isNaN(Date.parse(j.updated)))PUBLISHED=j.updated;SOURCE=String(j.source||SOURCE).slice(0,120);return "Rates loaded from the daily update."}return "The daily rates file is empty."}).catch(function(){return manual?"Could not load the daily rates file. Showing the last known rates.":""})}
 var introKey="";
 function fillIntro(){var pp=$("ipill");if(!pp)return;
   var col=function(x){return x>0?"#FF3B30":x<0?"#34C759":"#0066CC"},ar=function(x){return x>0?"▲":x<0?"▼":"●"};
