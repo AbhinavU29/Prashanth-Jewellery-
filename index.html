@@ -160,8 +160,14 @@ tr.pred{background:rgba(10,132,255,.07)}tr.pred td{font-style:italic}.badge.p{ba
 .rev-val{font-size:15px;font-weight:700;color:#fff;margin-top:2px;font-variant-numeric:tabular-nums}
 .rev-time{font-size:10px;color:#a8a3ad;margin-top:1px}
 .badge.r{background:rgba(212,175,55,.16);color:#D4AF37;border:1px solid rgba(212,175,55,.45);margin-left:5px}
-.sub-revs{font-size:11px;color:var(--mut);margin-top:3px;font-variant-numeric:tabular-nums;line-height:1.4}
-.sub-revs span{display:inline-block}
+.sub-revs{display:flex;flex-direction:column;gap:4px;margin-top:6px;font-size:11px;font-variant-numeric:tabular-nums}
+.sub-rev-line{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:7px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);width:fit-content;line-height:1.35}
+[data-theme=light] .sub-rev-line{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.07)}
+.sub-rev-line.latest{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.35);color:var(--ink)}
+.sub-rev-lbl{color:var(--mut);font-weight:500;font-size:10.5px}
+.sub-rev-val{font-weight:700;color:var(--ink);font-size:11px}
+.sub-rev-tag{font-size:8.5px;font-weight:700;color:#2b2100;background:#D4AF37;padding:1px 5px;border-radius:4px;letter-spacing:-.01em;line-height:1.2;margin-left:2px}
+.sub-rev-ico{flex-shrink:0;vertical-align:middle}
 .chart-lbl text{font-family:Inter,-apple-system,sans-serif;pointer-events:none}
 .pchip{border-style:dashed}.fbar{margin:16px 0 6px}.trk{position:relative;height:8px;border-radius:9px;background:var(--soft)}.trk .band{position:absolute;top:0;bottom:0;border-radius:9px;background:linear-gradient(90deg,rgba(10,132,255,.35),rgba(94,92,230,.55));animation:grow .9s cubic-bezier(.2,.8,.2,1) both;transform-origin:left}@keyframes grow{from{transform:scaleX(0)}}
 .trk .mk,.trk .mid{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%)}.trk .mk{background:#1D1D1F;border:3px solid var(--card)}.trk .mid{background:#fff;border:3px solid #0A84FF}
@@ -333,12 +339,14 @@ function renderIntradayRevisions(d){
   var h='<div class="rev-header"><span><i class="rev-pulse"></i>Today’s Price Updates ('+revList.length+')</span><span style="color:'+diffCol+'">'+diffTxt+'</span></div><div class="rev-grid">';
   revList.forEach(function(r,i){
     var isLatest=(i===latestIdx);
-    h+='<div class="rev-box'+(isLatest?' active':'')+'"><div class="rev-lbl"><span>'+r.session+'</span>'+(isLatest?'<span class="rev-tag">Latest</span>':'')+'</div><div class="rev-val">'+inr(r.g22)+'</div><div class="rev-time">'+r.time+'</div></div>';
+    var ico=r.session==="Morning"
+      ?'<svg class="sub-rev-ico" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/></svg>'
+      :'<svg class="sub-rev-ico" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="#0A84FF" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><polyline points="8 4.2 8 8 10.8 9.5"/></svg>';
+    h+='<div class="rev-box'+(isLatest?' active':'')+'"><div class="rev-lbl"><span style="display:inline-flex;align-items:center;gap:4px">'+ico+r.session+'</span>'+(isLatest?'<span class="rev-tag">Latest</span>':'')+'</div><div class="rev-val">'+inr(r.g22)+'</div><div class="rev-time">'+r.time+'</div></div>';
   });
   h+='</div>';
   el.innerHTML=h;
 }
-
 function renderHero(){
   var g=last("g22"),s=last("silver"),n=G22.length,c=chg("g22");
   $("phRate").textContent=inr(g.v);$("phDate").textContent=dObj(g.d).toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"});
@@ -485,9 +493,18 @@ function renderTable(){
   dayList(monKey()).forEach(function(d){var lbl=dObj(d).toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short",timeZone:"Asia/Kolkata"});
     if(!(d in by)){h+='<tr class="na"><td class="c-d">'+lbl+'</td><td class="c-na" colspan="3">No verified rate</td></tr>';return}
     var v=by[d],df=pv===null?null:v-pv,isH=d===st.hi.d,isL=d===st.lo.d,isT=d===st.s[st.s.length-1].d&&monKey()===months()[months().length-1],cc=df===null||df===0?"fl":df>0?"up":"dn",ct=df===null?"—":df===0?"No change":(df>0?"+":"−")+inr(Math.abs(df));pv=v;
-    var revList=(!silver&&REVS&&REVS[d])||null;
+        var revList=(!silver&&REVS&&REVS[d])||null;
     var revBadge=(revList&&revList.length>1)?('<span class="badge r">'+revList.length+' updates</span>'):"";
-    var revSub=(revList&&revList.length>1)?('<div class="sub-revs">'+revList.map(function(r){return '<span>'+r.session+' ('+r.time+'): '+inr(r.g22)+'</span>'}).join(' · ')+'</div>'):"";
+    var revSub="";
+    if(!silver&&revList&&revList.length>1){
+      revSub='<div class="sub-revs">'+revList.map(function(r,idx){
+        var isLatest=(idx===revList.length-1);
+        var ico=r.session==="Morning"
+          ?'<svg class="sub-rev-ico" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/></svg>'
+          :'<svg class="sub-rev-ico" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="#0A84FF" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><polyline points="8 4.2 8 8 10.8 9.5"/></svg>';
+        return '<div class="sub-rev-line'+(isLatest?' latest':'')+'">'+ico+'<span class="sub-rev-lbl">'+r.session+' ('+r.time+'):</span><span class="sub-rev-val">'+inr(r.g22)+'</span>'+(isLatest?'<span class="sub-rev-tag">Latest</span>':'')+'</div>';
+      }).join('')+'</div>';
+    }
     h+='<tr class="'+(isH?"hi":isL?"lo":isT?"tdy":"")+'"><td class="c-d">'+lbl+(isH?'<span class="badge">Highest</span>':"")+(isL?'<span class="badge">Lowest</span>':"")+(isT?'<span class="badge t">'+(d===today()?"Today":"Latest")+'</span>':"")+revBadge+'</td><td class="c-r"><b>'+inr(v)+'</b>'+revSub+'</td><td class="c-c '+cc+'">'+ct+'</td><td class="c-p" data-l="'+(silver?"Per kg":"Per pavan")+'">'+inr(silver?v*1000:v*8)+'</td></tr>'});
   if(FC&&!silver&&monKey()===months()[months().length-1]){var kk=sel==="g24"?24/22:1,pa=Math.round(FC.lo*kk),pb=Math.round(FC.hi*kk);h+='<tr class="pred"><td class="c-d">'+dObj(FC.for_date).toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short",timeZone:"Asia/Kolkata"})+'<span class="badge p">Predicted</span></td><td class="c-r"><b>'+inr(pa)+' – '+inr(pb)+'</b></td><td class="c-c fl">'+FC.level+'% range</td><td class="c-p" data-l="Per pavan">'+inr(pa*8)+' – '+inr(pb*8)+'</td></tr>'}
   $("tableView").innerHTML=h+"</tbody></table>";
