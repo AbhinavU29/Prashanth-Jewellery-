@@ -148,26 +148,35 @@ nav{position:sticky;top:10px;z-index:30;margin-top:10px;padding:10px 16px;border
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.35s}
 .lgd{position:absolute;right:6px;top:-6px;display:flex;gap:14px;font-size:12px;color:var(--mut)}.lgd span::before{content:"";display:inline-block;width:16px;height:0;border-top:3px solid #0A84FF;margin-right:6px;vertical-align:middle}.lgd .lp::before{border-top-style:dashed}.chartbox{padding-top:18px}
 tr.pred{background:rgba(10,132,255,.07)}tr.pred td{font-style:italic}.badge.p{background:transparent;border:1px dashed #0A84FF;color:#0A84FF}
-.rev-wrap{margin:12px 0 10px;padding:11px 13px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);text-align:left;animation:fu .35s ease}
-[data-theme=light] .phone .rev-wrap{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22)}
+.rev-wrap{margin:12px 0 10px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);text-align:left;animation:fu .35s ease}
+[data-theme=light] .phone .rev-wrap{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.24)}
 .rev-header{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11.5px;font-weight:600;margin-bottom:8px;letter-spacing:-.01em}
 .rev-pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:#D4AF37;box-shadow:0 0 8px #D4AF37;margin-right:6px;animation:pulse 1.6s infinite}
-.rev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:6px}
-.rev-box{padding:7px 9px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);transition:transform .2s,border-color .2s}
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:6px}
+.rev-box{padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.rev-box:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.22)}
 .rev-box.active{background:rgba(212,175,55,.18);border-color:rgba(212,175,55,.5);box-shadow:0 2px 8px rgba(0,0,0,.15)}
-.rev-lbl{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#a8a3ad;font-weight:600}
+.rev-lbl{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:600}
+.rev-badge{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;padding:1.5px 5px;border-radius:4px}
+.rev-badge.morning{background:rgba(242,140,90,.22);color:#F28C5A}
+.rev-badge.afternoon{background:rgba(10,132,255,.22);color:#64D2FF}
+.rev-badge.evening{background:rgba(175,82,222,.22);color:#DA8FFF}
 .rev-tag{font-size:8.5px;font-weight:700;color:#2b2100;background:#D4AF37;padding:1px 5px;border-radius:99px;letter-spacing:-.01em}
-.rev-val{font-size:15px;font-weight:700;color:#fff;margin-top:2px;font-variant-numeric:tabular-nums}
-.rev-time{font-size:10px;color:#a8a3ad;margin-top:1px}
+.rev-val{font-size:15px;font-weight:700;color:#fff;margin-top:3px;font-variant-numeric:tabular-nums}
+.rev-time{font-size:10px;color:#a8a3ad;margin-top:2px}
 .badge.r{background:rgba(212,175,55,.16);color:#D4AF37;border:1px solid rgba(212,175,55,.45);margin-left:5px}
-.sub-revs{display:flex;flex-direction:column;gap:4px;margin-top:6px;font-size:11px;font-variant-numeric:tabular-nums}
-.sub-rev-line{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:7px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);width:fit-content;line-height:1.35}
-[data-theme=light] .sub-rev-line{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.07)}
-.sub-rev-line.latest{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.35);color:var(--ink)}
-.sub-rev-lbl{color:var(--mut);font-weight:500;font-size:10.5px}
-.sub-rev-val{font-weight:700;color:var(--ink);font-size:11px}
-.sub-rev-tag{font-size:8.5px;font-weight:700;color:#2b2100;background:#D4AF37;padding:1px 5px;border-radius:4px;letter-spacing:-.01em;line-height:1.2;margin-left:2px}
-.sub-rev-ico{flex-shrink:0;vertical-align:middle}
+.sub-revs{display:flex;flex-direction:column;align-items:flex-end;gap:4px;margin-top:6px;font-size:11px;font-variant-numeric:tabular-nums}
+.sub-rev-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:7px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);color:var(--mut);line-height:1.35;white-space:nowrap;transition:transform .2s ease,background .2s ease,border-color .2s ease}
+[data-theme=light] .sub-rev-chip{background:rgba(0,0,0,.035);border-color:rgba(0,0,0,.08)}
+.sub-rev-chip:hover{transform:translateX(-2px);border-color:var(--line)}
+.sub-rev-chip.latest{background:rgba(212,175,55,.12);border-color:rgba(212,175,55,.4);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.sub-rev-pill{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;padding:1px 5px;border-radius:4px;line-height:1.2}
+.sub-rev-pill.morning{background:rgba(242,140,90,.18);color:#F28C5A}
+.sub-rev-pill.afternoon{background:rgba(10,132,255,.18);color:#0A84FF}
+.sub-rev-pill.evening{background:rgba(175,82,222,.18);color:#AF52DE}
+.sub-rev-time{font-size:10px;color:var(--mut)}
+.sub-rev-val{font-weight:700;color:var(--ink);font-size:11.5px}
+.sub-rev-tag{font-size:8.5px;font-weight:700;color:#2b2100;background:#D4AF37;padding:1px 5px;border-radius:4px;letter-spacing:-.01em;line-height:1.2}
 .chart-lbl text{font-family:Inter,-apple-system,sans-serif;pointer-events:none}
 .pchip{border-style:dashed}.fbar{margin:16px 0 6px}.trk{position:relative;height:8px;border-radius:9px;background:var(--soft)}.trk .band{position:absolute;top:0;bottom:0;border-radius:9px;background:linear-gradient(90deg,rgba(10,132,255,.35),rgba(94,92,230,.55));animation:grow .9s cubic-bezier(.2,.8,.2,1) both;transform-origin:left}@keyframes grow{from{transform:scaleX(0)}}
 .trk .mk,.trk .mid{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%)}.trk .mk{background:#1D1D1F;border:3px solid var(--card)}.trk .mid{background:#fff;border:3px solid #0A84FF}
@@ -327,6 +336,12 @@ function dTxt(k){var c=chg(k);return c.diff===0?(trend(k).txt||"No change vs yes
 function mseries(k){var m=monKey();return series(k).filter(function(x){return x.d.slice(0,7)===m})}
 function stats(k){var s=mseries(k),lo=s[0],hi=s[0],sum=0;s.forEach(function(x){if(x.v<lo.v)lo=x;if(x.v>hi.v)hi=x;sum+=x.v});return {s:s,lo:lo,hi:hi,avg:sum/s.length}}
 
+function sessClass(s){
+  var l=(s||"").toLowerCase();
+  if(l.indexOf("morn")>=0) return "morning";
+  if(l.indexOf("eve")>=0) return "evening";
+  return "afternoon";
+}
 function renderIntradayRevisions(d){
   var el=$("phRevisions");if(!el)return;
   var revList=REVS&&REVS[d];
@@ -339,10 +354,8 @@ function renderIntradayRevisions(d){
   var h='<div class="rev-header"><span><i class="rev-pulse"></i>Today’s Price Updates ('+revList.length+')</span><span style="color:'+diffCol+'">'+diffTxt+'</span></div><div class="rev-grid">';
   revList.forEach(function(r,i){
     var isLatest=(i===latestIdx);
-    var ico=r.session==="Morning"
-      ?'<svg class="sub-rev-ico" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/></svg>'
-      :'<svg class="sub-rev-ico" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="#0A84FF" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><polyline points="8 4.2 8 8 10.8 9.5"/></svg>';
-    h+='<div class="rev-box'+(isLatest?' active':'')+'"><div class="rev-lbl"><span style="display:inline-flex;align-items:center;gap:4px">'+ico+r.session+'</span>'+(isLatest?'<span class="rev-tag">Latest</span>':'')+'</div><div class="rev-val">'+inr(r.g22)+'</div><div class="rev-time">'+r.time+'</div></div>';
+    var sc=sessClass(r.session);
+    h+='<div class="rev-box'+(isLatest?' active':'')+'"><div class="rev-lbl"><span class="rev-badge '+sc+'">'+r.session+'</span>'+(isLatest?'<span class="rev-tag">Latest</span>':'')+'</div><div class="rev-val">'+inr(r.g22)+'</div><div class="rev-time">'+r.time+'</div></div>';
   });
   h+='</div>';
   el.innerHTML=h;
@@ -497,12 +510,12 @@ function renderTable(){
     var revBadge=(revList&&revList.length>1)?('<span class="badge r">'+revList.length+' updates</span>'):"";
     var revSub="";
     if(!silver&&revList&&revList.length>1){
+      var is24=(sel==="g24");
       revSub='<div class="sub-revs">'+revList.map(function(r,idx){
         var isLatest=(idx===revList.length-1);
-        var ico=r.session==="Morning"
-          ?'<svg class="sub-rev-ico" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/></svg>'
-          :'<svg class="sub-rev-ico" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="#0A84FF" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><polyline points="8 4.2 8 8 10.8 9.5"/></svg>';
-        return '<div class="sub-rev-line'+(isLatest?' latest':'')+'">'+ico+'<span class="sub-rev-lbl">'+r.session+' ('+r.time+'):</span><span class="sub-rev-val">'+inr(r.g22)+'</span>'+(isLatest?'<span class="sub-rev-tag">Latest</span>':'')+'</div>';
+        var rVal=is24?(r.g24||Math.round(r.g22*24/22)):r.g22;
+        var sc=sessClass(r.session);
+        return '<div class="sub-rev-chip'+(isLatest?' latest':'')+'"><span class="sub-rev-pill '+sc+'">'+r.session+'</span><span class="sub-rev-time">'+r.time+'</span><span class="sub-rev-val">'+inr(rVal)+'</span>'+(isLatest?'<span class="sub-rev-tag">Latest</span>':'')+'</div>';
       }).join('')+'</div>';
     }
     h+='<tr class="'+(isH?"hi":isL?"lo":isT?"tdy":"")+'"><td class="c-d">'+lbl+(isH?'<span class="badge">Highest</span>':"")+(isL?'<span class="badge">Lowest</span>':"")+(isT?'<span class="badge t">'+(d===today()?"Today":"Latest")+'</span>':"")+revBadge+'</td><td class="c-r"><b>'+inr(v)+'</b>'+revSub+'</td><td class="c-c '+cc+'">'+ct+'</td><td class="c-p" data-l="'+(silver?"Per kg":"Per pavan")+'">'+inr(silver?v*1000:v*8)+'</td></tr>'});
