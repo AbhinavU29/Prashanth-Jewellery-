@@ -3,33 +3,37 @@
 "weekday": "Sunday",
 "last_date": "2026-11-28",
 "last_rate": 11720,
-"lo": 11580,
+"lo": 11465,
 "mid": 11720,
-"hi": 11860,
+"hi": 11980,
 "level": 80,
 "tag": "Neutral",
-"sigma_pct": 0.85,
-"z": 1.4,
+"sigma_pct": 1.48,
+"z": 1.5,
 "unchanged_share": {
 "n": 26,
-"share": 0.88
+"share": 0.23
 },
 "signal": {
-"used": false
+"used": true,
+"move_pct": 0.0,
+"source": "COMEX gold x USD/INR"
 },
-"basis": "Kerala history only",
+"basis": "live market signal",
 "model": {
 "name": "Ridge regression on market factors",
-"status": "collecting",
-"oos_days": 0,
-"n_samples": 0
+"status": "inactive",
+"oos_days": 146,
+"n_samples": 206,
+"gain_pct": 0.5,
+"dir_acc": 0.65
 },
 "backtest": {
 "days": 90,
-"coverage": 0.8,
-"avg_width": 395,
-"flat_width": 454,
-"typical_move": 106
+"coverage": 0.789,
+"avg_width": 392,
+"flat_width": 457,
+"typical_move": 111
 },
-"generated": "2026-11-28T15:45:00+05:30"
+"generated": "2026-11-28T15:53:02+05:30"
 }
