@@ -4,7 +4,7 @@
 Hardening: https only, host allow-list (also after redirects), size cap, timeouts, value bounds,
 15% jump guard, majority/median across sources for the newest two days, writes only on change.
 Exit code 1 (red run, e-mail from GitHub) when no gold rate could be read at all."""
-import json, os, re, sys, urllib.parse, urllib.request
+import html, json, os, re, sys, urllib.parse, urllib.request
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -34,7 +34,7 @@ def raw(url):
     raise last
 
 def text(url):
-    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", raw(url)))
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(raw(url))))
 
 def attempt(name, url, fn, *a):
     try: rows = fn(text(url), *a)
@@ -61,23 +61,22 @@ def parse_kgr_revisions(raw_html):
         clean = []
         for it in items:
             if not clean or clean[-1]["g22"] != it["g22"]: clean.append(it)
-        if len(clean) > 1:
-            for idx, it in enumerate(clean):
-                if idx == 0: it["session"] = "Morning"
-                elif idx == 1:
-                    tm = int(it["dt"].split("T")[1][:2]) if "T" in it["dt"] else 13
-                    it["session"] = "Afternoon" if tm < 16 else "Evening"
-                else: it["session"] = "Evening"
-                it.pop("dt", None)
-            revs[d] = clean
+        for idx, it in enumerate(clean):
+            if idx == 0: it["session"] = "Morning"
+            elif idx == 1:
+                tm = int(it["dt"].split("T")[1][:2]) if "T" in it["dt"] else 13
+                it["session"] = "Afternoon" if tm < 16 else "Evening"
+            else: it["session"] = "Evening"
+            it.pop("dt", None)
+        revs[d] = clean
     return revs
 
 # ---- parsers -> {date: value}
 def g_livegold(b, y):  return {ymd(y, mnum(m), d): num(g) for _, d, m, g in re.findall(r"(\w{3}),\s*(\d{1,2})\s+([A-Za-z]{3,9})\s+₹\s*([\d,]+)\s+₹\s*[\d,]+\s+₹\s*[\d,]+", b)}
 def g_kgr(b, y):       return {ymd(y, mnum(m), d): num(g) for m, d, g in re.findall(r"\b" + MON + r"\s+(\d{1,2})\s+₹\s*([\d,]+)\s+₹", b)}
-def g_goodreturns(b, _): return {ymd(y, mnum(m), d): num(g) for m, d, y, g in re.findall(r"\b" + MON + r"\s+(\d{1,2}),\s*(\d{4})\s*₹\s*[\d,]+\s*\([^)]*\)\s*₹\s*([\d,]+)", b)}
-def s_goodreturns(b, _): return {ymd(y, mnum(m), d): num(g) / 10 for m, d, y, g in re.findall(r"\b" + MON + r"\s+(\d{1,2}),\s*(\d{4})\s*₹\s*([\d,]+)\s*₹\s*[\d,]+\s*₹\s*[\d,]+", b)}
-def s_groww(b, _):     return {ymd(2000 + int(y), mnum(m), d): num(g) for d, m, y, g in re.findall(r"\b(\d{1,2})\s+" + MON + r"\s+'(\d{2})\s*₹\s*([\d,.]+)", b)}
+def g_goodreturns(b, _): return {ymd(y, mnum(m), d): num(g) for m, d, y, g in re.findall(r"\b" + MON + r"\s+(\d{1,2}),\s*(\d{4})\s*(?:₹|&#x20b9;)?\s*[\d,]+\s*\([^)]*\)\s*(?:₹|&#x20b9;)?\s*([\d,]+)", b)}
+def s_goodreturns(b, _): return {ymd(y, mnum(m), d): num(g) / 10 for m, d, y, g in re.findall(r"\b" + MON + r"\s+(\d{1,2}),\s*(\d{4})\s*(?:₹|&#x20b9;)?\s*([\d,]+)\s*(?:₹|&#x20b9;)?\s*[\d,]+\s*(?:₹|&#x20b9;)?\s*[\d,]+", b)}
+def s_groww(b, _):     return {ymd(2000 + int(y), mnum(m), d): num(g) for d, m, y, g in re.findall(r"\b(\d{1,2})\s+" + MON + r"\s+'(\d{2})\s*(?:₹|&#x20b9;)?\s*([\d,.]+)", b)}
 def ibja(b, _):        return {f"{y}-{m}-{d}": [int(a), int(p)] for d, m, y, a, p in re.findall(r"(\d{2})/(\d{2})/(\d{4})\s+Gold\s+999\s+(\d{5,6})\s+(\d{5,6})\s+10 Gms", b)}
 
 def consensus(sources, lo_hi, recent_from):
@@ -101,7 +100,7 @@ def merge(rows, found, today, yday):
 
 def main():
     now = datetime.now(IST); today = now.strftime("%Y-%m-%d"); yday = (now - timedelta(days=1)).strftime("%Y-%m-%d")
-    path = "data/rates.json"; data = json.load(open(path))
+    path = "data/rates.json"; data = json.load(open(path, encoding="utf-8"))
     revisions = data.get("revisions", {})
     before = json.dumps([data.get("g22", []), data.get("silver", []), data.get("revisions", {})], sort_keys=True)
     months = [(now.year, now.month)] + ([(now.year, now.month - 1) if now.month > 1 else (now.year - 1, 12)] if now.day <= 3 else [])
@@ -113,7 +112,7 @@ def main():
             kgr_raw = raw(kgr_url)
             m_revs = parse_kgr_revisions(kgr_raw)
             revisions.update(m_revs)
-            kgr_txt = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", kgr_raw))
+            kgr_txt = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(kgr_raw)))
             kg_rows = g_kgr(kgr_txt, y)
             for rd, ritems in m_revs.items():
                 if ritems: kg_rows[rd] = ritems[-1]["g22"]
@@ -137,17 +136,17 @@ def main():
         data["revisions"] = revisions
         if json.dumps([data["g22"], data["silver"], data["revisions"]], sort_keys=True) != before:
             data["updated"] = now.isoformat(timespec="seconds")
-            json.dump(data, open(path, "w"), indent=0)
+            json.dump(data, open(path, "w", encoding="utf-8"), indent=0, ensure_ascii=False)
             lines.append(f"**Saved:** 22K {data['g22'][-1]}, silver {data['silver'][-1]}, revisions: {len(data['revisions'])}")
         else:
             lines.append(f"No change: 22K {data['g22'][-1]}, silver {data['silver'][-1]}")
         if data["g22"][-1][0] < yday: lines.append(f"::warning::Newest saved rate is {data['g22'][-1][0]} - sources have nothing newer yet")
     try:
-        mp = "data/market.json"; mk = json.load(open(mp)); old = json.dumps(mk.get("ibja"), sort_keys=True); mk.setdefault("ibja", {}).update(ib)
-        if json.dumps(mk["ibja"], sort_keys=True) != old: json.dump(mk, open(mp, "w"), indent=0, ensure_ascii=False)
+        mp = "data/market.json"; mk = json.load(open(mp, encoding="utf-8")); old = json.dumps(mk.get("ibja"), sort_keys=True); mk.setdefault("ibja", {}).update(ib)
+        if json.dumps(mk["ibja"], sort_keys=True) != old: json.dump(mk, open(mp, "w", encoding="utf-8"), indent=0, ensure_ascii=False)
     except Exception as e: print("IBJA merge skipped:", e, file=sys.stderr)
     out = "\n".join(lines); print(out)
-    if os.environ.get("GITHUB_STEP_SUMMARY"): open(os.environ["GITHUB_STEP_SUMMARY"], "a").write(out + "\n")
+    if os.environ.get("GITHUB_STEP_SUMMARY"): open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8").write(out + "\n")
     return 0 if gold else 1
 
 if __name__ == "__main__": sys.exit(main())

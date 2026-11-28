@@ -1,21 +1,28 @@
 name: Update Kerala rates
 on:
   schedule:
-    - cron: "20 3 * * *"     # 8:50 AM IST: starts the 9-11 AM run that polls every 5 minutes
-    - cron: "7,37 * * * *"   # every 30 minutes, all day (off the busy :00/:30 marks)
+    # 03:30 - 06:30 UTC = 09:00 - 12:00 PM IST (morning release, every 15 min)
+    - cron: "*/15 3-6 * * *"
+    # 06:30 - 13:00 UTC = 12:00 - 06:30 PM IST (afternoon revisions, every 20 min)
+    - cron: "*/20 7-13 * * *"
+    # Off-market hours (every 2 hours)
+    - cron: "0 0,2,14,16,18,20,22 * * *"
   push:
     branches: [main]
-    paths: ["scripts/**", ".github/workflows/**"]   # uploading new scripts runs an update immediately
+    paths: ["scripts/**", ".github/workflows/**"]
   workflow_dispatch:
+
 permissions:
-  contents: write            # only to commit data/*.json
+  contents: write
+
 concurrency:
   group: update-rates
-  cancel-in-progress: false
+  cancel-in-progress: true
+
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

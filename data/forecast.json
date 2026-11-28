@@ -1,39 +1,35 @@
 {
-"for_date": "2026-11-28",
-"weekday": "Saturday",
-"last_date": "2026-11-27",
-"last_rate": 11770,
-"lo": 11690,
-"mid": 11950,
-"hi": 12215,
+"for_date": "2026-11-29",
+"weekday": "Sunday",
+"last_date": "2026-11-28",
+"last_rate": 11720,
+"lo": 11580,
+"mid": 11720,
+"hi": 11860,
 "level": 80,
-"tag": "Leaning up",
-"sigma_pct": 1.48,
-"z": 1.49,
+"tag": "Neutral",
+"sigma_pct": 0.85,
+"z": 1.4,
 "unchanged_share": {
 "n": 26,
-"share": 0.0
+"share": 0.88
 },
 "signal": {
-"used": true,
-"move_pct": 1.7,
-"source": "COMEX gold x USD/INR"
+"used": false
 },
-"basis": "live market signal",
+"basis": "Kerala history only",
 "model": {
 "name": "Ridge regression on market factors",
-"status": "inactive",
-"oos_days": 145,
-"n_samples": 205,
-"gain_pct": 0.2,
-"dir_acc": 0.64
+"status": "collecting",
+"oos_days": 0,
+"n_samples": 0
 },
 "backtest": {
 "days": 90,
 "coverage": 0.8,
-"avg_width": 392,
-"flat_width": 458,
-"typical_move": 112
+"avg_width": 395,
+"flat_width": 454,
+"typical_move": 106
 },
-"generated": "2026-11-28T01:45:09+05:30"
+"generated": "2026-11-28T15:45:00+05:30"
 }
